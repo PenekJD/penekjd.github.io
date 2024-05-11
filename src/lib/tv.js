@@ -24,6 +24,7 @@ var $tv = {
     },
 
     initTv: function(){
+        window.dispatchEvent(new Event('tv-loaded'));
         let self = this;
         $tv.imports = $tv.imports.filter( (el, idx) => {
             if (!self.config.renderAll) {
