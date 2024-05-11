@@ -1,0 +1,184 @@
+* {
+    position: relative;
+}
+body {
+    padding: 0px;
+    margin: 0px;
+    font-family: 'Simple', sans-serif;
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+}
+header {
+    background-color: rgba(45, 45, 45, 0.8);
+    color:#fff;
+}
+footer {
+    padding: 20px;
+    background-color: rgba(25,25,25,0.5);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width:100%;
+    min-height: 100vh;
+}
+ul {
+    margin: 0px;
+    padding: 0px;
+}
+li {
+    display: block;
+}
+
+
+/* ******** START Fonts ******** */
+@font-face {
+    font-family: "Title";
+    src: url(/src/fonts/Aguarita.ttf);
+}
+@font-face {
+    font-family: "Code";
+    src: url(/src/fonts/Code-Regular.ttf);
+}
+@font-face {
+    font-family: "Text";
+    src: url(/src/fonts/Simple.ttf);
+}
+
+.title { font-family: "Title"; }
+.text { font-family: "Text"; }
+.code { font-family: "Code"; }
+
+.large  { font-size: 32px; }
+.big    { font-size: 24px; }
+.med    { font-size: 16px; }
+.small  { font-size: 14px; }
+.tiny   { font-size: 12px; }
+.atom   { font-size: 10px; }
+
+.c-fff { color:#fff; }
+
+/* ******** End Fonts ******** */
+
+
+/* ******** Start FLEX PRESET ******** */
+.flx {
+    display: flex;
+}
+.flx.col {
+    flex-direction: column;
+}
+.flx.row {
+    flex-direction: row;
+}
+.btwn {
+    justify-content: space-between;
+}
+.ycenter {
+    align-items: center;
+}
+.yend {
+    align-items: end;
+}
+.ystart {
+    align-items: start;
+}
+.xcenter {
+    justify-content: center;
+}
+/* ******** End FLEX PRESET ******** */
+
+
+/* ******** Start MARGINS and PADDINGS ******** */
+.main-box {
+    padding:20px;
+    margin: 20px;
+}
+.tiny-box {
+    padding: 10px;
+}
+/* ******** End MARGINS and PADDINGS ******** */
+
+
+.app-menu .menu-tab {
+    display:block;
+    font-family: "Title";
+    color:#aaa;
+    text-decoration: none;
+    padding: 20px;
+    border-right: 4px solid transparent;
+    margin-right: -4px;
+    margin-left: -10px;
+    padding-left: 70px;
+    transition: 0.3s;
+    font-size: 12px;
+    text-align: right;
+    white-space: nowrap;
+}
+.menu-tab:hover {
+    color:#fff;
+    border-right: 4px solid #fff;
+    transform: translateX(10px);
+    background-color: rgba(88, 196, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+.menu-tab.selected {
+    color:#37f;
+    background-color: rgba(255,255,255,0.1);
+    border-right: 4px solid #37f;
+    backdrop-filter: none;
+}
+.menu-tab.selected:hover {
+    transform: none;
+}
+
+
+.bg-wave {
+    position: relative;
+    overflow: hidden;
+}
+.bg-wave::before {
+    content: '';
+    display: block;
+    position:relative;
+    top: -50%;
+    left: -50%;
+    background-image: linear-gradient(180deg, #0c0c0c , rgb(68, 123, 147));
+    background-size: 100% 100%;
+    width:200%;
+    height:200%;
+    min-height: 200vw;
+    min-width: 200vh;
+    aspect-ratio: 1/1;
+    animation: example linear 10s infinite alternate;
+}
+.bg-super {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 0;
+}
+
+@keyframes example {
+    0% {
+        transform: rotate(0);
+    }
+    25% {
+        transform: rotate(90deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    75% {
+        transform: rotate(270deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+  }
