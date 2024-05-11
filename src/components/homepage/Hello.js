@@ -4,8 +4,8 @@ $tv.setComponent(
             super();
 
             this.innerHTML = /*html*/`
-                <div class="main-box code c-fff">
-                    Main page Hello
+                <div class="main-box code c-fff flx row ycenter">
+                    <span class="title big">Why should we work together?</span>
                 </div>
             `;
         }

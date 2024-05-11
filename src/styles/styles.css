@@ -93,17 +93,61 @@ li {
 /* ******** End FLEX PRESET ******** */
 
 
-/* ******** Start MARGINS and PADDINGS ******** */
+/* ******** Start Components, MARGINS and PADDINGS ******** */
 .main-box {
     padding:20px;
     margin: 20px;
+    background-color: rgba(0,0,0,0.4);
 }
 .tiny-box {
     padding: 10px;
 }
-/* ******** End MARGINS and PADDINGS ******** */
+.photo {
+    width: 65px; height:65px;
+    border-radius: 100%;
+    background-position: center center;
+    background-size: cover;
+    border: 1px solid #37f;
+    transition: 0.5s;
+    cursor: pointer;
+    overflow: hidden;
+    margin: 10px;
+}
+.photo:hover {
+    transform: scale(1.5);
+    border-radius: 4px;
+    height:80px;
+    z-index:20;
+}
+.photo:hover::after{
+    content: ''attr(title)'';
+    display: block;
+    font-size: 8px;
+    position: absolute;
+    bottom: 0px;
+    background-color:rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+    padding:2px;
+}
+.photo.ptop {
+    background-position: center -10px;
+}
+/* ******** End Components, MARGINS and PADDINGS ******** */
 
 
+.accent {
+    color:#37f;
+}
+.head-title {
+    padding: 20px 10px 20px;
+    background-color: rgba(0,0,0,0.15);
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+.head-title .smile {
+    margin-right: 8px;
+    font-size: 30px;
+    color:#37f;
+}
 .app-menu .menu-tab {
     display:block;
     font-family: "Title";

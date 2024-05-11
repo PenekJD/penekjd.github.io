@@ -29,9 +29,12 @@ $tv.setComponent(
 
             this.innerHTML = /*html*/`
                 <nav x-data="${component}">
-                    <div class="flx col" style="padding:20px 10px 30px;">
-                        <span class="title med">PenekJD</span>
-                        <span class="text atom">FrontEnd Developer</span>
+                    <div class="head-title flx row">
+                        <span class="smile">&#x2630;</span>
+                        <div class="flx col xcenter">
+                            <span class="title med">Penek<span class="accent">JD</span></span>
+                            <span class="text tiny">FrontEnd</span>
+                        </div>
                     </div>
                     <ul class="app-menu flx col">
                         <template x-for="(item, idx) in menuArr">
