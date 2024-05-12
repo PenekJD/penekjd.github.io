@@ -9,6 +9,7 @@ $tv.setComponent(
                     menuArr: [
                         {title:'Main', url:'/index.html', icon: ''},
                         {title:'About me', url:'/pages/about.html', icon: ''},
+                        {title:'Blog', url:'/pages/blog.html', icon: ''},
                     ],
                     init(){
                         let self = this;

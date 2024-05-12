@@ -33,7 +33,15 @@ ul {
 li {
     display: block;
 }
-
+a {
+    color:rgb(255, 177, 51);
+    font-weight: bold;
+    transition: 0.3s;
+}
+a:hover {
+    color:#fff;
+    text-shadow: 0px 1px 1px #37f, 1px 1px 1px #37f, 1px 0px 1px #37f, -1px 0px 1px #37f, -1px -1px 1px #37f, 0px -1px 1px #37f;
+}
 
 /* ******** START Fonts ******** */
 @font-face {
@@ -59,6 +67,8 @@ li {
 .small  { font-size: 14px; }
 .tiny   { font-size: 12px; }
 .atom   { font-size: 10px; }
+
+.txtcolumn { text-align: justify; }
 
 .c-fff { color:#fff; }
 
@@ -94,6 +104,12 @@ li {
 
 
 /* ******** Start Components, MARGINS and PADDINGS ******** */
+.mb-10 {
+    margin-bottom: 10px;
+}
+.mr-10 {
+    margin-right: 10px;
+}
 .main-box {
     padding:20px;
     margin: 20px;
@@ -114,23 +130,66 @@ li {
     margin: 10px;
 }
 .photo:hover {
-    transform: scale(1.5);
+    transform: scale(2) rotateZ(-5deg);
     border-radius: 4px;
     height:80px;
+    margin-bottom:-5px;
     z-index:20;
+    box-shadow: 0 0 15px #000;
 }
 .photo:hover::after{
     content: ''attr(title)'';
     display: block;
     font-size: 8px;
+    color:#fff;
+    text-shadow: 1px 1px 0 #000;
     position: absolute;
     bottom: 0px;
     background-color:rgba(0,0,0,0.5);
     backdrop-filter: blur(5px);
     padding:2px;
+    animation: appearing linear 0.3s;
+    width:100%;
 }
 .photo.ptop {
     background-position: center -10px;
+}
+.glowing {
+    animation: photoglow linear 2s infinite alternate;
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+@media (max-width:767px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 0px;
+    }
+}
+.blog-item {
+    background-color: rgba(255,255,255,0.1);
+    margin: 20px 0px;
+}
+.blog-img {
+    height: 300px;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.blog-img img {
+    position:absolute;
+    width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    min-width: 100%;
+}
+.blog-text {
+    padding: 50px;
 }
 /* ******** End Components, MARGINS and PADDINGS ******** */
 
@@ -169,6 +228,7 @@ li {
     transform: translateX(10px);
     background-color: rgba(88, 196, 255, 0.1);
     backdrop-filter: blur(10px);
+    text-shadow: none;
 }
 .menu-tab.selected {
     color:#37f;
@@ -198,7 +258,7 @@ li {
     min-height: 200vw;
     min-width: 200vh;
     aspect-ratio: 1/1;
-    animation: example linear 10s infinite alternate;
+    animation: bgspin linear 10s infinite alternate;
 }
 .bg-super {
     position: fixed;
@@ -209,7 +269,7 @@ li {
     z-index: 0;
 }
 
-@keyframes example {
+@keyframes bgspin {
     0% {
         transform: rotate(0);
     }
@@ -225,4 +285,24 @@ li {
     100% {
         transform: rotate(360deg);
     }
-  }
+}
+@keyframes appearing {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+@keyframes photoglow {
+    0% {
+        box-shadow: 0 0 0 transparent;
+    }
+    100% {
+        box-shadow: 0 0 20px #37f;
+    } 
+}
+
+
+/* ****** Extra ****** */
+.hidden { display: none; }
