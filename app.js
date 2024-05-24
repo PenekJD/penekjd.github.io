@@ -11,4 +11,5 @@ window.addEventListener("tv-loaded", function(){
     $tv.import({ define: 'app-about', file: '/src/components/about/AboutContent'});
     $tv.import({ define: 'app-slider', file: '/src/components/widgets/Slider'});
     $tv.import({ define: 'app-blog', file: '/src/components/widgets/Blog'});
+    $tv.import({ define: 'app-banner-widget', file: '/src/components/widgets/BannerWidget'});
 });
