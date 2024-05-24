@@ -5,6 +5,7 @@ $tv.setComponent(
 
             const component = function(){
                 return {
+                    isOpen: true,
                     selectedIdx: null,
                     menuArr: [
                         {title:'Main', url:'/index.html', icon: ''},
@@ -30,14 +31,14 @@ $tv.setComponent(
 
             this.innerHTML = /*html*/`
                 <nav x-data="${component}">
-                    <div class="head-title flx row">
+                    <div class="head-title flx row" @click=" isOpen = !isOpen ">
                         <span class="smile">&#x2630;</span>
-                        <div class="flx col xcenter">
+                        <div class="flx col xcenter" x-show="isOpen">
                             <span class="title med">Penek<span class="accent">JD</span></span>
                             <span class="text tiny">FrontEnd</span>
                         </div>
                     </div>
-                    <ul class="app-menu flx col">
+                    <ul class="app-menu flx col" x-show="isOpen">
                         <template x-for="(item, idx) in menuArr">
                             <li>
                                 <a  x-bind:href="item.url"
