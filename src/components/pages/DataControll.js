@@ -68,6 +68,7 @@ $tv.setComponent(
 
             this.innerHTML = /*html*/`
                 <div x-data="${component}">
+                    <h1>Progress data</h1>
                     <table class="progress_table">
                         <tr>
                             <td><button @click="exportData()">Export</button></td>

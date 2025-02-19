@@ -1,6 +1,17 @@
+/* Fonts */
+@font-face {
+    font-family: 'Orange';
+    src: url(/src/fonts/orange_juice.ttf);
+    font-weight: normal;
+}
+
+/* App styles */
 h1,
 h2 {
+    font-family: 'Orange', sans-serif;
+    font-weight: 400;
     margin: 0 0 12px;
+    font-size:40px;
 }
 button {
     transition: 0.3s;
@@ -85,6 +96,7 @@ site-menu ul {
     flex-direction: row;
 }
 .menu-tab {
+    font-family: 'Orange', sans-serif;
     transition: 0.3s;
     padding: 20px;
     text-decoration: none;
@@ -99,7 +111,6 @@ site-menu ul {
     background-color:#fff;
 }
 .menu-tab.selected {
-    font-weight: bold;
     color:#000;
     border-bottom: 4px solid rgb(64, 126, 189);
     background-color:#fff;
@@ -120,8 +131,17 @@ site-datacontroll,
     vertical-align: top;
 }
 @media (max-width:767px) {
+    site-menu ul {
+        padding: 12px 0px;
+    }
+    .menu-tab {
+        padding: 12px;
+    }
     .menu-tab .text {
         display:none;
+    }
+    .menu-tab .icon {
+        font-size: 10px;
     }
     .menu-tab.selected .text {
         display:inline-block;
@@ -132,8 +152,9 @@ site-datacontroll,
 /* * * CONTENT * * */
 .page,
 page {
+    max-width:600px;
     display: flex;
-    margin: 20px;
+    margin: 20px auto;
     background-color: #fff;
     padding: 30px;
     border-radius: 18px;
@@ -176,6 +197,7 @@ site-footer {
     justify-content: center;
     gap: 8px;
     margin-right: 10px;
+    margin-left: -40px;
     transition: 0.3s;
     padding: 5px;
     font-size:10px;
