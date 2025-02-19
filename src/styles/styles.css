@@ -12,6 +12,7 @@ h2 {
     font-weight: 400;
     margin: 0 0 12px;
     font-size:40px;
+    min-height: 47px;
 }
 button {
     transition: 0.3s;
@@ -79,6 +80,11 @@ ul {
 site-main-page {
     display: block;
     width: 100%;
+    min-height: 134px;
+}
+
+words-list {
+    min-height: 150px;
 }
 
 /* * * MENU * * */
@@ -171,6 +177,7 @@ page {
 }
 
 site-footer {
+    min-height: 60px;
     background-color:#eee;
     display: flex;
     align-items: center;
