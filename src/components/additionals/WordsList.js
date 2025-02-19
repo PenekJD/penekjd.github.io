@@ -7,6 +7,7 @@ $tv.setComponent(
 
             $tv.bindComponent('initWordsList', function() {
                 return {
+                    opened: false,
                     selectedTopic: 0,
                     selectedDate: null,
                     datesArr: [],
@@ -82,6 +83,9 @@ $tv.setComponent(
                                 self.renderItemsByFilters();
                             }
                         });
+                        window.addEventListener('toggle-words-list', function() {
+                            self.opened = true;
+                        });
                     }
                 }
             });
@@ -94,48 +98,58 @@ $tv.setComponent(
                               x-text="'🪙 '+(data.words_pares ? data.words_pares.length : 0)"
                         ></span>
                     </div>
-                    <div style="display:flex; flex-direction:row; align-items:center; justify-content:end; gap:15px; margin:-5px 0px 5px;">
-                        <template x-if="datesArr && datesArr.length">
-                            <div style="display:flex; justify-content:end; align-items:center;">
-                                <span style="margin-right:5px; font-size:12px;">Render date:</span>
-                                <select x-model="selectedDate" @change="renderItemsByFilters()">
-                                    <template x-for="el in datesArr">
-                                        <option x-bind:value="el.date" x-text="el.date"></option>
-                                    </template>
-                                </select>
-                            </div>
-                        </template>
-                        <template x-if="data.availableTopics && data.availableTopics.length">
-                            <div>
-                                <span style="margin-right:5px; font-size:12px;">Group:</span>
-                                <select x-model="selectedTopic" @change="prepareDatesArr(true); renderItemsByFilters();">
-                                    <template x-for="topic in data.availableTopics">
-                                        <option :value="topic.id"
-                                                x-text="topic.title"
-                                                :selected=" topic.id === selectedTopic ">
-                                        </option>
-                                    </template>
-                                </select>
-                            </div>
-                        </template>
-                    </div>
-                    <template x-if="data.words_pares && data.words_pares.length">
-                        <div class="words-column">
-                            <template x-for="el in renderArr">
-                                <div x-bind:class="'string-row evaluation_'+( el.average_score || el.average_score===0 ? el.average_score : 'none')"
-                                     @click="hoverID = el.id" @mouseleave="hoverID = null"
-                                >   
-                                    <template x-if="el.id === hoverID">
-                                        <div class="translate">
-                                            <span x-text="el.translate"></span>
-                                            <input type="text" x-model="el.translate" @keyup.enter="callUpdate()"/>
-                                        </div>
-                                    </template>
-                                    <div class="lang" x-text="el.lang"></div>
+
+                    <template x-if="opened">
+                    <div>
+                        <div style="display:flex; flex-direction:row; align-items:center; justify-content:end; gap:15px; margin:-5px 0px 5px;">
+                            <template x-if="datesArr && datesArr.length">
+                                <div style="display:flex; justify-content:end; align-items:center;">
+                                    <span style="margin-right:5px; font-size:12px;">Render date:</span>
+                                    <select x-model="selectedDate" @change="renderItemsByFilters()">
+                                        <template x-for="el in datesArr">
+                                            <option x-bind:value="el.date" x-text="el.date"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </template>
+                            <template x-if="data.availableTopics && data.availableTopics.length">
+                                <div>
+                                    <span style="margin-right:5px; font-size:12px;">Group:</span>
+                                    <select x-model="selectedTopic" @change="prepareDatesArr(true); renderItemsByFilters();">
+                                        <template x-for="topic in data.availableTopics">
+                                            <option :value="topic.id"
+                                                    x-text="topic.title"
+                                                    :selected=" topic.id === selectedTopic ">
+                                            </option>
+                                        </template>
+                                    </select>
                                 </div>
                             </template>
                         </div>
+                        <template x-if="data.words_pares && data.words_pares.length">
+                            <div class="words-column">
+                                <template x-for="el in renderArr">
+                                    <div x-bind:class="'string-row evaluation_'+( el.average_score || el.average_score===0 ? el.average_score : 'none')"
+                                        @click="hoverID = el.id" @mouseleave="hoverID = null"
+                                    >   
+                                        <template x-if="el.id === hoverID">
+                                            <div class="translate">
+                                                <span x-text="el.translate"></span>
+                                                <input type="text" x-model="el.translate" @keyup.enter="callUpdate()"/>
+                                            </div>
+                                        </template>
+                                        <div class="lang" x-text="el.lang"></div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
                     </template>
+                    <div style="width:100%;">
+                        <button style="margin: 8px 0px 0px; width:100%;"
+                                x-text="opened ? 'Hide' : 'Open'"
+                                @click="opened = !opened"></button>
+                    </div>
                     <link href="/src/styles/wordslist.css" rel="stylesheet" type="text/css">
                 </div>
             `;

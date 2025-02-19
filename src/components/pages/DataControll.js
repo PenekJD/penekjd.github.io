@@ -46,6 +46,8 @@ $tv.setComponent(
                         window.dispatchEvent(
                             new CustomEvent('data-save-storage', {detail: {data: this.dataToImport}})
                         );
+
+                        window.location.href = '/';
                     },
                     selectFile(element) {
                         let self = this;
@@ -71,7 +73,28 @@ $tv.setComponent(
                     <table class="progress_table">
                         <tr>
                             <td><button @click="exportData()">Export</button></td>
-                            <td></td>
+                            <td>
+                                <template x-if="data">
+                                    <div>
+                                        <template x-if="data.availableTopics">
+                                            <code>
+                                                <b>Topics:</b>
+                                                <template x-for="topic in data.availableTopics">
+                                                    <div :key="topic.id">
+                                                        <span x-text="'- ' + topic.title"></span>
+                                                    </div>
+                                                </template>
+                                            </code>
+                                        </template>
+                                        <template x-if="data.words_pares">
+                                            <div style="margin-top:5px;">
+                                                <div style="font-weight:bold;"
+                                                     x-text="'Word phrases: ' + data.words_pares.length"></div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </td>
                         </tr>
                         <tr>
                             <td>
@@ -83,18 +106,19 @@ $tv.setComponent(
                                 <template x-if="dataToImport">
                                     <div>
                                         <template x-if="dataToImport.availableTopics">
-                                            <div>
-                                                <h3>Topics:</h3>
+                                            <code>
+                                                <b>Topics:</b>
                                                 <template x-for="topic in dataToImport.availableTopics">
                                                     <div :key="topic.id">
-                                                        <span x-text="topic.title"></span>
+                                                        <span x-text="'- ' + topic.title"></span>
                                                     </div>
                                                 </template>
-                                            </div>
+                                            </code>
                                         </template>
                                         <template x-if="dataToImport.words_pares">
-                                            <div>
-                                                <h3 x-text="'Word phrases: ' + dataToImport.words_pares.length"></h3>
+                                            <div style="margin-top:5px;">
+                                                <div style="font-weight:bold;"
+                                                     x-text="'Word phrases: ' + dataToImport.words_pares.length"></div>
                                             </div>
                                         </template>
                                     </div>

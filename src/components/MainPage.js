@@ -51,6 +51,7 @@ $tv.setComponent(
 
                         this.clearInput();
                         this.callUpdate();
+                        this.toggleOtherComponents();
                     },
 
                     clearInput(){
@@ -85,6 +86,10 @@ $tv.setComponent(
                             }
                             self.selectedTopic =  self.data.selectedTopic ?  self.data.selectedTopic*1 : 0;
                         });
+                    },
+
+                    toggleOtherComponents() {
+                        window.dispatchEvent(new Event('toggle-words-list'))
                     }
                 }
             });

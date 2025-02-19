@@ -98,7 +98,7 @@ site-menu ul {
 .menu-tab {
     font-family: 'Orange', sans-serif;
     transition: 0.3s;
-    padding: 20px;
+    padding: 22px 10px;
     text-decoration: none;
     color:#000;
     border-bottom: 4px solid transparent;
@@ -123,6 +123,9 @@ site-datacontroll,
 .progress_table td button {
     width: 100%;
 }
+.progress_table tr:nth-child(1) {
+    background-color: #eee;
+}
 .progress_table {
     border-collapse: collapse;
     border: 1px solid #eee;
@@ -138,7 +141,7 @@ site-datacontroll,
         padding: 12px 0px;
     }
     .menu-tab {
-        padding: 12px;
+        padding: 17.5px 6px;
     }
     .menu-tab .text {
         display:none;
