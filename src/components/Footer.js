@@ -5,7 +5,7 @@ class Footer extends HTMLElement {
         this.innerHTML = /*html*/`
             <div>
                 <span>PenekJD</span>
-                <div>Powered by <a href="https://alpinejs.dev/" target="_blank">AlpineJS</a> + <a href="/pages/tvjs.html">tv.js</a></div>
+                <div>Powered by <a href="/pages/tvjs.html">tv.js</a> + <a href="https://alpinejs.dev/" target="_blank">AlpineJS</a></div>
                 <div style="font-size:8px;">Languager v.1.2.1</div>
             </div>
             
