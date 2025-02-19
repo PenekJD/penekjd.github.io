@@ -89,6 +89,7 @@ site-menu {
     align-items: center;
     background-color:#eee;
     box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
+    min-height: 59px;
 }
 site-menu ul {
     padding: 20px 0px;
@@ -137,6 +138,9 @@ site-datacontroll,
     vertical-align: top;
 }
 @media (max-width:767px) {
+    site-menu {
+        min-height: 48px;
+    }
     site-menu ul {
         padding: 12px 0px;
     }
