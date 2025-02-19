@@ -2,21 +2,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>About PenekJD</title>
-    <script defer src="/src/lib/tv.js"></script>
+    <title>Languager | About</title>
+    <script src="/src/lib/tv.js"></script>
     <script defer src="/src/lib/alpine.js"></script>
-    <script defer src="/app.js"></script>
+    <script src="/app.js"></script>
     <link href="/src/styles/styles.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-    <div class="bg-wave bg-super"></div>
-    <header>
-        <app-header></app-header>
-    </header>
-    <content>
-        <app-about></app-about>
-        <footer>
-            <app-footer></app-footer>
-        </footer>
-    </content>
+    <top>
+        <header>
+            <site-menu>
+                <site-top-additionals></site-top-additionals>
+            </site-menu>
+        </header>
+        <page>
+            <div style="padding:30px;">
+                <h1>About Languager</h1>
+                <br>
+                <p>This application was created for keeping your notes with phrases.</p>
+                <p>In addition to the notes, there is a simulator that will help you check how you have mastered the phrases.</p>
+            </div>
+        </page>
+    </top>
+    <footer>
+        <site-footer></site-footer>
+    </footer>
+    
 </body>

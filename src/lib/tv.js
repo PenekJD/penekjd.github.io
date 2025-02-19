@@ -9,16 +9,6 @@ var $tv = {
     links: {},
     linksLoaded: 0,
     isInitialized: false,
-    loadingScreen: (function(){
-        let loadingScreen = document.querySelector("body #app_loading");
-        if (!loadingScreen) {
-            loadingScreen = document.createElement("div");
-            loadingScreen.setAttribute('class', 'loading');
-            loadingScreen.setAttribute('id', 'app_loading');
-            document.body.appendChild(loadingScreen);
-        }
-        return loadingScreen;
-    })(),
 
     setComponent: function(comp){
         this.links = {...this.links, [comp.name]: comp};
@@ -34,7 +24,6 @@ var $tv = {
     },
 
     initTv: function(){
-        window.dispatchEvent(new Event('tv-loaded'));
         let self = this;
         $tv.imports = $tv.imports.filter( (el, idx) => {
             if (!self.config.renderAll) {
@@ -64,9 +53,6 @@ var $tv = {
             strName = strName[strName.length-1];
             customElements.define(el.define, $tv.links[strName]);
         });
-        if (this.loadingScreen) {
-            this.loadingScreen.classList.remove("loading");
-        }
     },
 
     setConfig: function(config){
