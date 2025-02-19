@@ -104,16 +104,19 @@ site-menu ul {
     border-bottom: 4px solid transparent;
     cursor: pointer;
     color: #999;
+    filter: grayscale(100);
 }
 .menu-tab:hover {
     border-bottom: 4px solid #999;
     color: rgb(64, 126, 189);
     background-color:#fff;
+    filter: grayscale(0);
 }
 .menu-tab.selected {
     color:#000;
     border-bottom: 4px solid rgb(64, 126, 189);
     background-color:#fff;
+    filter: grayscale(0);
 }
 site-datacontroll,
 .progress_table,
