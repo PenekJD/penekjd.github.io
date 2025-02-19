@@ -2,7 +2,7 @@ class TopAdditionals extends HTMLElement {
     constructor() {
         super();
 
-        const component = function(){
+        $tv.bindComponent('initTopAdditionals', function(){
             let curDate = new Date();
             return {
                 daysPower: 7,
@@ -126,10 +126,10 @@ class TopAdditionals extends HTMLElement {
                     });
                 }
             }
-        }
+        });
 
         this.innerHTML = /*html*/`
-            <div x-data="${component}">
+            <div x-data="$tv.initTopAdditionals()">
                 <template x-if="loaded">
                     <div class="top_additionals_block">
                         <div class="top_additionals" x-bind:title="levels[level].title + ' ('+score+')'">

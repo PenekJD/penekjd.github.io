@@ -5,7 +5,7 @@ $tv.setComponent(
                 
             //const content = this.innerHTML;
 
-            const component = function(){
+            $tv.bindComponent('initAssessment', function(){
                 return {
                     isComponentLoaded: false,
                     checkObj: null,
@@ -211,10 +211,10 @@ $tv.setComponent(
                     }
 
                 }
-            }
+            });
 
             this.innerHTML = /*html*/`
-                <div x-data="${component}">
+                <div x-data="$tv.initAssessment()">
 
                     <div class="title">
                         <h2>Assessment</h2>

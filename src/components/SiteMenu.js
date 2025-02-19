@@ -3,7 +3,7 @@ $tv.setComponent(
         constructor() {
             super();
 
-            const component = function(){
+            $tv.bindComponent('initSiteMenu', function(){
                 return {
                     selectedIdx: null,
                     menuArr: [
@@ -27,10 +27,10 @@ $tv.setComponent(
                         });
                     }
                 }
-            }
+            });
 
             this.innerHTML = /*html*/`
-                <nav x-data="${component}">
+                <nav x-data="$tv.initSiteMenu()">
                     <ul>
                         <template x-for="(item, idx) in menuArr">
                             <li>

@@ -5,14 +5,14 @@ $tv.setComponent(
     
             // const content = this.innerHTML ? this.innerHTML : '';
 
-            const component = function(){
+            $tv.bindComponent('initDataHandler', function(){
                 return {
                     storageId: 'app_data',
                     data: {},
 
                     init(){
                         this.addHookEvents();
-                        $nextTick(() => {
+                        this.$nextTick(() => {
                             this.readStorage(); 
                         });
                     },
@@ -44,10 +44,10 @@ $tv.setComponent(
                         });
                     }
                 }
-            }
+            });
     
             this.innerHTML = /*html*/`
-                <div x-data="${component}"></div>
+                <div x-data="$tv.initDataHandler()"></div>
             `;
         }
     }

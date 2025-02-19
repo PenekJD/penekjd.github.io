@@ -3,7 +3,7 @@ $tv.setComponent(
         constructor() {
             super();
 
-            const component = function(){
+            $tv.bindComponent('initDataControll', function(){
                 return {
                     data: null,
                     dataToImport: null,
@@ -59,15 +59,14 @@ $tv.setComponent(
                                 return;
                             }
                             self.dataToImport = JSON.parse(e.target.result);
-                            console.log(self.dataToImport);
                         };
                         reader.readAsText(file);
                     }
                 }
-            }
+            });
 
             this.innerHTML = /*html*/`
-                <div x-data="${component}">
+                <div x-data="$tv.initDataControll()">
                     <h1>Progress data</h1>
                     <table class="progress_table">
                         <tr>

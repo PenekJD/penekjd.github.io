@@ -58,6 +58,12 @@ var $tv = {
     setConfig: function(config){
         let self = this;
         self.config = { ...self.config, ...config };
-    }
+    },
 
+    bindComponent: function(componentName, component){
+        if (this[componentName] || !component) {
+            return;
+        }
+        this[componentName] = component;
+    }
 }

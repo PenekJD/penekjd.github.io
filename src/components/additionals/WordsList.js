@@ -5,7 +5,7 @@ $tv.setComponent(
     
             // const content = this.innerHTML ? this.innerHTML : '';
 
-            const component = function() {
+            $tv.bindComponent('initWordsList', function() {
                 return {
                     selectedTopic: 0,
                     selectedDate: null,
@@ -84,10 +84,10 @@ $tv.setComponent(
                         });
                     }
                 }
-            }
+            });
     
             this.innerHTML = /*html*/`
-                <div x-data="${component}" style="width:100%;">
+                <div x-data="$tv.initWordsList()" style="width:100%;">
                     <div style="display:flex; margin-bottom:10px; flex-direction:row; justify-content: space-between; width:100%; align-items:center; background-image: linear-gradient(to right, transparent, rgb(64, 126, 189));">
                         <h2 style="margin:0; padding:10px 0;">🗃 Fraze base</h2>
                         <span style="font-weight:bold; font-size:20px; padding-right:20px; color:#fff;" 
