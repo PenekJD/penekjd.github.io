@@ -1,18 +1,21 @@
-/* Fonts */
+/* Fonts 
 @font-face {
     font-family: 'Orange';
     src: url(/src/fonts/orange_juice.ttf);
     font-weight: normal;
 }
+*/
 
 /* App styles */
 h1,
 h2 {
-    font-family: 'Orange', sans-serif;
-    font-weight: 400;
+    font-family: 'Tahoma', sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
     margin: 0 0 12px;
-    font-size:40px;
-    min-height: 47px;
+    font-size:20px;
+    min-height: 20px;
 }
 button {
     transition: 0.3s;
@@ -103,7 +106,8 @@ site-menu ul {
     flex-direction: row;
 }
 .menu-tab {
-    font-family: 'Orange', sans-serif;
+    font-family: Tahoma, sans-serif;
+    font-weight: 900;
     transition: 0.3s;
     padding: 22px 10px;
     text-decoration: none;
