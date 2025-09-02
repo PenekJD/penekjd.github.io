@@ -5,7 +5,7 @@ $tv.setComponent(
     
             // const content = this.innerHTML ? this.innerHTML : '';
 
-            $tv.bindComponent('initDataHandler', function(){
+            $tv.$bind('initDataHandler', function(){
                 return {
                     storageId: 'app_data',
                     data: {},

@@ -5,7 +5,7 @@ $tv.setComponent(
 
             // const content = this.innerHTML;
     
-            $tv.bindComponent('initMainPage', function(){
+            $tv.$bind('initMainPage', function(){
                 return {
                     currentInput: '',
                     alert: '',

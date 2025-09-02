@@ -5,7 +5,7 @@ $tv.setComponent(
                 
             //const content = this.innerHTML;
 
-            $tv.bindComponent('initAssessment', function(){
+            $tv.$bind('initAssessment', function(){
                 return {
                     isComponentLoaded: false,
                     checkObj: null,

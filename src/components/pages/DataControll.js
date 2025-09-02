@@ -3,7 +3,7 @@ $tv.setComponent(
         constructor() {
             super();
 
-            $tv.bindComponent('initDataControll', function(){
+            $tv.$bind('initDataControll', function(){
                 return {
                     data: null,
                     dataToImport: null,

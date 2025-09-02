@@ -2,7 +2,7 @@ class TopAdditionals extends HTMLElement {
     constructor() {
         super();
 
-        $tv.bindComponent('initTopAdditionals', function(){
+        $tv.$bind('initTopAdditionals', function(){
             let curDate = new Date();
             return {
                 daysPower: 7,

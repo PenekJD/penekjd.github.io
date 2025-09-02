@@ -3,7 +3,7 @@ $tv.setComponent(
         constructor() {
             super();
 
-            $tv.bindComponent('initSiteMenu', function(){
+            $tv.$bind('initSiteMenu', function(){
                 return {
                     selectedIdx: null,
                     menuArr: [

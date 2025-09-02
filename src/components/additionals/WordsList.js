@@ -5,7 +5,7 @@ $tv.setComponent(
     
             // const content = this.innerHTML ? this.innerHTML : '';
 
-            $tv.bindComponent('initWordsList', function() {
+            $tv.$bind('initWordsList', function() {
                 return {
                     opened: false,
                     selectedTopic: 0,
