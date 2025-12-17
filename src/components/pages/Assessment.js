@@ -22,6 +22,56 @@ $tv.setComponent(
                         1: ['Try harder', 'You should learn more', 'Did you even learn smth?!', 'Wooops...', 'Thats crappy', 'My grandma can do better', 'It\'s all you got?'],
                         0: ['😾 Are you serious?', '👹 Booo for you...', '😿 No way...', '💩 Holly shmolly...', '🙀 Ouh my...', '🤕 Shame on you...']
                     },
+                    commonCorrections: {
+                        // be
+                        "i'm": "i am",
+                        "you're": "you are",
+                        "we're": "we are",
+                        "they're": "they are",
+                        "he's": "he is",
+                        "she's": "she is",
+                        "it's": "it is",
+                        "there's": "there is",
+                        "here's": "here is",
+                        // have
+                        "i've": "i have",
+                        "you've": "you have",
+                        "we've": "we have",
+                        "they've": "they have",
+                        "could've": "could have",
+                        "would've": "would have",
+                        "should've": "should have",
+                        "might've": "might have",
+                        "must've": "must have",
+                        // will
+                        "i'll": "i will",
+                        "you'll": "you will",
+                        "he'll": "he will",
+                        "she'll": "she will",
+                        "it'll": "it will",
+                        "we'll": "we will",
+                        "they'll": "they will",
+                        // negatives
+                        "aren't": "are not",
+                        "isn't": "is not",
+                        "wasn't": "was not",
+                        "weren't": "were not",
+                        "don't": "do not",
+                        "doesn't": "does not",
+                        "didn't": "did not",
+                        "haven't": "have not",
+                        "hasn't": "has not",
+                        "hadn't": "had not",
+                        "won't": "will not",
+                        "wouldn't": "would not",
+                        "shouldn't": "should not",
+                        "couldn't": "could not",
+                        "mightn't": "might not",
+                        "mustn't": "must not",
+                        "can't": "cannot",
+                        "cannot": "can not",
+                        "shan't": "shall not"
+                    },
                     showMotivation: '',
                     isByWeak: false,
                     isByDate: false,
@@ -85,8 +135,21 @@ $tv.setComponent(
                     },
 
                     evaluateInput(){
+                        const self = this;
                         function clearAndPrepareStrToArr(str){
-                            return str.trim().toLowerCase().replace(/[.,;?!:&%$#@*()-+><]/g, '').split(' ');
+                            return str
+                                .trim()
+                                .toLowerCase()
+                                .replace(/[.,;?!:&%$#@*()-+><]/g, '')
+                                .split(' ')
+                                .reduce((acc, word) => {
+                                    if (!self.commonCorrections[word]) {
+                                        acc.push(word);
+                                        return acc;
+                                    }
+                                    let tempArr = self.commonCorrections[word].split(' ');
+                                    return [...acc, ...tempArr];
+                                }, []);
                         }
                         if ( this.checkObj && this.checkObj.translate ) {
                             let self = this;
