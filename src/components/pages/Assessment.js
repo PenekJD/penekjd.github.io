@@ -87,9 +87,14 @@ $tv.setComponent(
                     wordsEvaluation: [],
                     isTillRemember: false,
                     data: {},
+                    randomStarted: false,
+                    usedRandomIndexes: [],
 
                     init(){
                         this.addHookEvents();
+                        this.$watch('type', (value, oldValue) => {
+                            this.changePreparation();
+                        });
                     },
 
                     checkInput(){
@@ -124,6 +129,13 @@ $tv.setComponent(
 
                     getObjectForAssessment(){
                         if (this.assessmentTypes[this.type]==='Random') {
+                            if (this.randomStarted && this.currentInput) {
+                                this.arrayForRender.splice(this.selectedIdx, 1)[0];
+                            } 
+                            this.randomStarted = true;
+                            if (!this.arrayForRender.length) {
+                                this.changePreparation();
+                            }
                             this.selectedIdx = Math.floor( Math.random() * this.arrayForRender.length );
                         } else {
                             this.selectedIdx++;
@@ -196,6 +208,7 @@ $tv.setComponent(
                         this.checkObj = null;
                         this.selectedIdx = 0;
                         this.unprepared = true;
+                        this.randomStarted = false;
                         this.prepareArrayForRender();
                     },
 

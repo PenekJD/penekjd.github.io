@@ -293,8 +293,9 @@ site-assessment {
 }
 .check_words_row {
     display: flex; 
-    flex-direction:row; 
-    gap: 8px;
+    flex-direction:row;
+    flex-wrap: wrap;
+    column-gap: 8px;
     padding:5px;
     margin: 5px 0px 0px;
     background-color:#eee;
