@@ -129,7 +129,7 @@ $tv.setComponent(
 
                     getObjectForAssessment(){
                         if (this.assessmentTypes[this.type]==='Random') {
-                            if (this.randomStarted && this.currentInput) {
+                            if (this.randomStarted) {
                                 this.arrayForRender.splice(this.selectedIdx, 1)[0];
                             } 
                             this.randomStarted = true;
