@@ -329,8 +329,8 @@ $tv.setComponent(
                         </div>
                     </template>
                     <div class="filters-settings">
-                        <div style="width: 170px;">
-                            <div class="display: flex; flex-direction:row; gap:5px; align-items:center;">
+                        <div style="width: 200px;">
+                            <div class="display: flex; flex-wrap: nowrap; flex-direction:row; gap:5px; align-items:center;">
                                 <span x-text="selectedIdx+1"></span> /
                                 <span x-text="arrayForRender && arrayForRender.length"></span>
                                 <select x-model="type" style="margin-left:10px;">

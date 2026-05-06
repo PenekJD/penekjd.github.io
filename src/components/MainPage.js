@@ -97,7 +97,7 @@ $tv.setComponent(
             this.innerHTML = /*html*/`
                 <div x-data="$tv.initMainPage()">
                     <div class="row-between w-full">
-                        <h2>Abstract</h2>
+                        <h2>Log</h2>
                         <template x-if="data.availableTopics.length">
                             <div class="row-between">
                                 <select x-model="selectedTopic" @change="callUpdate()">
