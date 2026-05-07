@@ -1,54 +1,46 @@
-$tv.setComponent(
-    class DataHandler extends HTMLElement {
-        constructor() {
-            super();
-    
-            // const content = this.innerHTML ? this.innerHTML : '';
+class DataHandler extends TvAlpineHTMLElement {
 
-            $tv.bindComponent('initDataHandler', function(){
-                return {
-                    storageId: 'app_data',
-                    data: {},
+    ALPINE_COMPONENT_KEY = 'initDataHandler';
 
-                    init(){
-                        this.addHookEvents();
-                        this.$nextTick(() => {
-                            this.readStorage(); 
-                        });
-                    },
+    initDataHandler(){
+        return {
+            storageId: 'app_data',
+            data: {},
 
-                    saveStorage(){
-                        window.localStorage.setItem( this.storageId, JSON.stringify(this.data) );
-                        this.callUpdate();
-                    },
+            init(){
+                this.addHookEvents();
+                this.$nextTick(() => {
+                    this.readStorage(); 
+                });
+            },
 
-                    readStorage(){
-                        let dataStr = window.localStorage.getItem(this.storageId);
-                        if (!dataStr) { return; }
-                        this.data = JSON.parse(dataStr);
-                        this.callUpdate();
-                    },
+            saveStorage(){
+                window.localStorage.setItem( this.storageId, JSON.stringify(this.data) );
+                this.callUpdate();
+            },
 
-                    callUpdate(){
-                        let self = this;
-                        window.dispatchEvent( new CustomEvent( 'app-updated', { detail: { data: self.data } } ) );
-                    },
+            readStorage(){
+                let dataStr = window.localStorage.getItem(this.storageId);
+                if (!dataStr) { return; }
+                this.data = JSON.parse(dataStr);
+                this.callUpdate();
+            },
 
-                    addHookEvents(){
-                        let self = this;
-                        window.addEventListener('data-save-storage', function(e){
-                            if (e.detail && e.detail.data) {
-                                self.data = { ...self.data, ...e.detail.data };
-                                self.saveStorage();
-                            }
-                        });
+            callUpdate(){
+                let self = this;
+                window.dispatchEvent( new CustomEvent( 'app-updated', { detail: { data: self.data } } ) );
+            },
+
+            addHookEvents(){
+                let self = this;
+                window.addEventListener('data-save-storage', function(e){
+                    if (e.detail && e.detail.data) {
+                        self.data = { ...self.data, ...e.detail.data };
+                        self.saveStorage();
                     }
-                }
-            });
-    
-            this.innerHTML = /*html*/`
-                <div x-data="$tv.initDataHandler()"></div>
-            `;
+                });
+            }
         }
     }
-);
+}
+$tv.setComponent(DataHandler);
