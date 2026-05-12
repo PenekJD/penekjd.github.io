@@ -23,12 +23,16 @@ class DataHandler extends TvAlpineHTMLElement {
                 let dataStr = window.localStorage.getItem(this.storageId);
                 if (!dataStr) { return; }
                 this.data = JSON.parse(dataStr);
+                if (!window.globalConfig) {
+                    window.globalConfig = {};
+                }
+                window.globalConfig.data = this.data;
                 this.callUpdate();
             },
 
             callUpdate(){
                 let self = this;
-                window.dispatchEvent( new CustomEvent( 'app-updated', { detail: { data: self.data } } ) );
+                this.$dispatch('app-updated', { data: self.data });
             },
 
             addHookEvents(){

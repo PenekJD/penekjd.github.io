@@ -7,7 +7,7 @@ class MainPage extends TvAlpineHTMLElement {
         <div>
             <div class="row-between w-full">
                 <h2>Log</h2>
-                <template x-if="data.availableTopics.length">
+                <template x-if="data && data.availableTopics && data.availableTopics.length">
                     <div class="row-between">
                         <select x-model="selectedTopic" @change="callUpdate()">
                             <template x-for="topic in data.availableTopics">
@@ -49,6 +49,7 @@ class MainPage extends TvAlpineHTMLElement {
             },
 
             init(){
+                this.receiveData();
                 this.addHookEvents();
             },
 
@@ -110,13 +111,21 @@ class MainPage extends TvAlpineHTMLElement {
                 this.callUpdate();
             },
 
+            receiveData(data) {
+                if (!data) {
+                    this.data = window.globalConfig ? window.globalConfig.data : {};
+                } else {
+                    this.data = data;
+                }
+                this.data = data ? { ...this.data, ...data } : this.data;
+                this.selectedTopic =  this.data.selectedTopic ?  this.data.selectedTopic*1 : 0;
+            },
+
             addHookEvents(){
                 let self = this;
                 window.addEventListener('app-updated', function(e){
-                    if (e.detail && e.detail.data) {
-                        self.data = { ...self.data, ...e.detail.data };
-                    }
-                    self.selectedTopic =  self.data.selectedTopic ?  self.data.selectedTopic*1 : 0;
+                    if (!e.detail || !e.detail.data) return;
+                    self.receiveData(e.detail.data);
                 });
             },
 

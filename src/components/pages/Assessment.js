@@ -199,6 +199,7 @@ class Assessment extends TvAlpineHTMLElement {
             usedRandomIndexes: [],
 
             init(){
+                this.receiveData();
                 this.addHookEvents();
                 this.$watch('type', (value, oldValue) => {
                     this.changePreparation();
@@ -375,19 +376,28 @@ class Assessment extends TvAlpineHTMLElement {
 
             callUpdate(){
                 let self = this;
-                window.dispatchEvent( new CustomEvent( 'data-save-storage', { detail: { data: self.data } } ) );
+                this.$dispatch('data-save-storage', { data: self.data });
+            },
+
+            receiveData(data) {
+                if (!data) {
+                    this.data = window.globalConfig ? window.globalConfig.data : {};
+                } else {
+                    this.data = data;
+                }
+                this.data = data ? { ...this.data, ...data } : this.data;
+                this.selectedTopic = this.data.selectedTopic ?  this.data.selectedTopic : 0;
+                if (this.data.words_pares) {
+                    this.prepareDatesArr();
+                    this.prepareArrayForRender();
+                }
             },
 
             addHookEvents(){
                 let self = this;
                 window.addEventListener('app-updated', function(e) {
-                    if (!self.isComponentLoaded && e.detail && e.detail.data) {
-                        self.data = { ...self.data, ...e.detail.data };
-                        self.selectedTopic = self.data.selectedTopic ?  self.data.selectedTopic : 0;
-                        self.prepareDatesArr();
-                        self.prepareArrayForRender();
-                        self.isComponentLoaded = true;
-                    }
+                    if (!e.detail || !e.detail.data) return;
+                    self.receiveData(e.detail.data);
                 });
                 window.addEventListener('check_comp', function(){
                     console.log(self.data);

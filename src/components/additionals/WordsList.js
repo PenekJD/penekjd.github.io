@@ -78,6 +78,7 @@ class WordsList extends TvAlpineHTMLElement {
             renderArr: [],
 
             init(){
+                this.receiveData();
                 this.addHookEvents();
             },
 
@@ -134,15 +135,25 @@ class WordsList extends TvAlpineHTMLElement {
                 });
             },
 
+            receiveData(data) {
+                if (!data) {
+                    this.data = window.globalConfig ? window.globalConfig.data : {};
+                } else {
+                    this.data = data;
+                }
+                this.data = data ? { ...this.data, ...data } : this.data;
+                if (this.data.words_pares) {
+                    this.selectedTopic = this.data.selectedTopic ?  this.data.selectedTopic*1 : 0;
+                    this.prepareDatesArr();
+                    this.renderItemsByFilters();
+                }
+            },
+
             addHookEvents(){
                 let self = this;
                 window.addEventListener('app-updated', function(e) {
-                    if (e.detail && e.detail.data) {
-                        self.data = { ...self.data, ...e.detail.data };
-                        self.selectedTopic = self.data.selectedTopic ?  self.data.selectedTopic*1 : 0;
-                        self.prepareDatesArr();
-                        self.renderItemsByFilters();
-                    }
+                    if (!e.detail || !e.detail.data) return;
+                    self.receiveData(e.detail.data);
                 });
                 window.addEventListener('toggle-words-list', function() {
                     self.opened = true;

@@ -69,14 +69,22 @@ class DataControll extends TvAlpineHTMLElement {
             data: null,
             dataToImport: null,
             init() {
+                this.receiveData();
                 this.addHookEvents();
+            },
+            receiveData(data) {
+                if (!data) {
+                    this.data = window.globalConfig ? window.globalConfig.data : {};
+                } else {
+                    this.data = data;
+                }
+                this.data = data ? { ...this.data, ...data } : this.data;
             },
             addHookEvents(){
                 let self = this;
                 window.addEventListener('app-updated', function(e) {
-                    if (e.detail && e.detail.data) {
-                        self.data = e.detail.data;
-                    }
+                    if (!e.detail || !e.detail.data) return;
+                    self.receiveData(e.detail.data);
                 });
             },
             exportData() {

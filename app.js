@@ -2,7 +2,7 @@
 // tv.js will only load what is needed
 
 //$tv.setConfig({ renderAll: false });
-$tv.setConfig({ waitForEveryone: true });
+$tv.setConfig({ waitForEveryone: false });
 $tv.import({ define: 'site-datahandler', file: '/src/components/additionals/DataHandler'});
 $tv.import({ define: 'site-top-additionals', file: '/src/components/additionals/TopAdditionals'});
 $tv.import({ define: 'site-menu', file: '/src/components/SiteMenu'});

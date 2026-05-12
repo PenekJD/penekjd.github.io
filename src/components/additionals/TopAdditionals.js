@@ -56,6 +56,7 @@ class TopAdditionals extends TvAlpineHTMLElement {
             ],
 
             init(){
+                this.receiveData();
                 this.addHookEvents();
             },
 
@@ -145,13 +146,20 @@ class TopAdditionals extends TvAlpineHTMLElement {
                 this.lastAbstract = this.lastAbstract ? this.lastAbstract : 0;
             },
 
+            receiveData(data) {
+                if (!data) {
+                    this.data = window.globalConfig ? window.globalConfig.data : {};
+                } else {
+                    this.data = data;
+                }
+                this.claculateScore();
+            },
+
             addHookEvents(){
                 let self = this;
                 window.addEventListener('app-updated', function(e) {
-                    if (e.detail && e.detail.data) {
-                        self.data = e.detail.data;
-                        self.claculateScore();
-                    }
+                    if (!e.detail || !e.detail.data) return;
+                    self.receiveData(e.detail.data);
                 });
             }
         }
