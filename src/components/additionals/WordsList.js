@@ -19,7 +19,7 @@ class WordsList extends TvAlpineHTMLElement {
                             <span style="margin-right:5px; font-size:12px;">Render date:</span>
                             <select x-model="selectedDate" @change="renderItemsByFilters()">
                                 <template x-for="el in datesArr">
-                                    <option x-bind:value="el.date" x-text="el.date"></option>
+                                    <option x-bind:value="el.date" x-text="showDataAsString(el.date)"></option>
                                 </template>
                             </select>
                         </div>
@@ -67,7 +67,13 @@ class WordsList extends TvAlpineHTMLElement {
     `;
 
     initWordsList() {
+        let formatter = new Intl.DateTimeFormat('en-EN', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
         return {
+            formatter: formatter,
             opened: false,
             selectedTopic: 0,
             selectedDate: null,
@@ -80,6 +86,11 @@ class WordsList extends TvAlpineHTMLElement {
             init(){
                 this.receiveData();
                 this.addHookEvents();
+            },
+
+            showDataAsString(dateStr) {
+                let dateObj = new Date(dateStr);
+                return this.formatter.format(dateObj);
             },
 
             prepareDatesArr(force){

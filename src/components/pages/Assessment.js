@@ -16,11 +16,11 @@ class Assessment extends TvAlpineHTMLElement {
                             <span style="font-size:22px;">🐵</span>
                         </template>
                         <template x-if="isByDate">
-                            <div style="display:flex; gap:4px; padding:4px; background-color:rgb(64, 126, 189); border-radius:6px;">
-                                <span>🗓</span>
+                            <div style="display:flex; align-items:center; gap:4px; padding:4px; background-color:rgb(64, 126, 189); border-radius:6px;">
+                                <span>🗓️</span>
                                 <select style="height:20px; padding:2px;" x-model="selectedDate" @change="changePreparation()">
                                     <template x-for="el in datesArr">
-                                        <option x-bind:value="el.date" x-text="el.date"></option>
+                                        <option x-bind:value="el.date" x-text="showDataAsString(el.date)"></option>
                                     </template>
                                 </select>
                             </div>
@@ -114,7 +114,13 @@ class Assessment extends TvAlpineHTMLElement {
     `;
 
     initAssessment() {
+        let formatter = new Intl.DateTimeFormat('en-EN', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
         return {
+            formatter: formatter,
             isComponentLoaded: false,
             checkObj: null,
             currentInput: '',
@@ -193,7 +199,7 @@ class Assessment extends TvAlpineHTMLElement {
             evaluated: true,
             currentEvaluation: null,
             wordsEvaluation: [],
-            isTillRemember: false,
+            isTillRemember: true,
             data: {},
             randomStarted: false,
             usedRandomIndexes: [],
@@ -372,6 +378,11 @@ class Assessment extends TvAlpineHTMLElement {
                                         : null;
                     this.updatesCount++;
                 }
+            },
+
+            showDataAsString(dateStr) {
+                let dateObj = new Date(dateStr);
+                return this.formatter.format(dateObj);
             },
 
             callUpdate(){
