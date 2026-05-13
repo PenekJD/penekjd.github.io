@@ -3,7 +3,7 @@ class Footer extends TvAlpineHTMLElement {
         <div>
             <span>PenekJD</span>
             <div>Powered by <a href="/pages/tvjs.html">tv.js</a> + <a href="https://alpinejs.dev/" target="_blank">AlpineJS</a></div>
-            <div style="font-size:8px;">Languager v.1.4.1</div>
+            <div style="font-size:8px;">Languager v.1.4.2</div>
         </div>
     `;
 }

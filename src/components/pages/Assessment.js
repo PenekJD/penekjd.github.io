@@ -401,13 +401,14 @@ class Assessment extends TvAlpineHTMLElement {
                 if (this.data.words_pares) {
                     this.prepareDatesArr();
                     this.prepareArrayForRender();
+                    this.isComponentLoaded = true;
                 }
             },
 
             addHookEvents(){
                 let self = this;
                 window.addEventListener('app-updated', function(e) {
-                    if (!e.detail || !e.detail.data) return;
+                    if (self.isComponentLoaded || !e.detail || !e.detail.data) return;
                     self.receiveData(e.detail.data);
                 });
                 window.addEventListener('check_comp', function(){
