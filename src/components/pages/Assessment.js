@@ -96,7 +96,7 @@ class Assessment extends TvAlpineHTMLElement {
                 <div class="evaluation_block">
                     <div class="check_words_row">
                         <template x-for="wordObj in wordsEvaluation">
-                            <span x-bind:class="'check_word text-outline score_' + wordObj.score " 
+                            <span x-bind:class="'check_word text-outline ' + ( wordObj.isPunct ? 'punct' : ('score_' + wordObj.score)) " 
                                 x-text="wordObj.word"
                             ></span>
                         </template>
@@ -270,6 +270,7 @@ class Assessment extends TvAlpineHTMLElement {
                         .replace(/[.,;?!:&%$#@*()-+><]/g, '')
                         .split(' ')
                         .reduce((acc, word) => {
+                            if (!word) return acc;
                             if (!self.commonCorrections[word]) {
                                 acc.push(word);
                                 return acc;
@@ -296,6 +297,22 @@ class Assessment extends TvAlpineHTMLElement {
                         self.wordsEvaluation.push(wordObj);
                     } );
                     self.currentEvaluation = Math.round( 4*self.currentEvaluation/(originalLang.length*2) );
+
+                    /** Rollback to origin view */
+                    let wordTokens = this.checkObj.lang.match(/\p{L}+|[^\p{L}\s]/gu);
+                    let resultBuffer = [];
+                    let arrIndex = 0;
+                    for (let token of wordTokens) {
+                        if (/[^\p{L}\s]/u.test(token)) {
+                            resultBuffer.push({ word:token, isPunct: true });
+                        } else {
+                            if (arrIndex >= this.wordsEvaluation.length) continue;
+                            this.wordsEvaluation[arrIndex].word = token;
+                            resultBuffer.push(this.wordsEvaluation[arrIndex]);
+                            arrIndex++;
+                        }
+                    }
+                    this.wordsEvaluation = resultBuffer;
 
                     // *********** start: Save evaluation results of fraze ***********
                     self.checkObj['check_numbers'] = self.checkObj['check_numbers'] ? self.checkObj['check_numbers']+=1 : 1;

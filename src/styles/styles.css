@@ -312,6 +312,10 @@ site-assessment {
     font-family: Tahoma, sans-serif;
     font-size: 20px;
 }
+.punct {
+    margin-left: -0.4rem;
+    color: #888;
+}
 .score_0 {
     color:rgb(254, 38, 38);
 }
