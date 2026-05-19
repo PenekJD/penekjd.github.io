@@ -316,6 +316,10 @@ site-assessment {
     margin-left: -0.4rem;
     color: #888;
 }
+.punct[punct="-"],
+.punct[punct="'"] {
+    margin-right: -0.4rem;
+}
 .score_0 {
     color:rgb(254, 38, 38);
 }

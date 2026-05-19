@@ -98,6 +98,7 @@ class Assessment extends TvAlpineHTMLElement {
                         <template x-for="wordObj in wordsEvaluation">
                             <span x-bind:class="'check_word text-outline ' + ( wordObj.isPunct ? 'punct' : ('score_' + wordObj.score)) " 
                                 x-text="wordObj.word"
+                                x-bind:punct="wordObj.isPunct ? wordObj.word : null"
                             ></span>
                         </template>
                     </div>
@@ -298,8 +299,10 @@ class Assessment extends TvAlpineHTMLElement {
                     } );
                     self.currentEvaluation = Math.round( 4*self.currentEvaluation/(originalLang.length*2) );
 
-                    /** Rollback to origin view */
-                    let wordTokens = this.checkObj.lang.match(/\p{L}+|[^\p{L}\s]/gu);
+                    /** Rollback to origin view
+                     * Buggy in some languages
+                     * 
+                    let wordTokens = originalLang.join(' ').match(/\p{L}+|[^\p{L}\s]/gu);
                     let resultBuffer = [];
                     let arrIndex = 0;
                     for (let token of wordTokens) {
@@ -313,6 +316,7 @@ class Assessment extends TvAlpineHTMLElement {
                         }
                     }
                     this.wordsEvaluation = resultBuffer;
+                    */
 
                     // *********** start: Save evaluation results of fraze ***********
                     self.checkObj['check_numbers'] = self.checkObj['check_numbers'] ? self.checkObj['check_numbers']+=1 : 1;
