@@ -367,20 +367,26 @@ site-assessment {
     justify-content: space-between;
     align-items: center;
 }
+.check_words_row_anchor {
+    position: relative;
+    width: 100%;
+}
 .check_words_row {
     display: flex; 
     flex-direction:row;
     flex-wrap: wrap;
     column-gap: 8px;
-    padding:5px;
-    margin: 5px 0px 0px;
-    border-radius: 10px;
-    width: fit-content;
+    padding: 10px;
+    margin: 0 -10px;
+    border-radius: 999rem;
+    width: 100%;
     position: absolute;
     bottom: -0.5rem;
     transform: translateY(100%);
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
 }
-.text-outline-old {
+.text-outline {
     text-shadow: 0px 1px 1px rgba(0,0,0,0.5), 1px 1px 1px rgba(0,0,0,0.5), 1px 0px 1px rgba(0,0,0,0.5), -1px 0px 1px rgba(0,0,0,0.5), -1px -1px 1px rgba(0,0,0,0.5), 0px -1px 1px rgba(0,0,0,0.5);
 }
 .check_word {
@@ -516,12 +522,12 @@ page:has(.eval_score_4) {
 .filter-checkbox span {
     white-space: nowrap;
     font-size:12px;
-    margin-left:20px;
 }
 .filter-checkbox input {
     max-width:16px;
     height:16px;
     margin:0;
+    margin-right:20px;
 }
 
 

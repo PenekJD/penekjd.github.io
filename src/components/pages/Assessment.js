@@ -29,6 +29,41 @@ class Assessment extends TvAlpineHTMLElement {
                 </template>
             </div>
 
+                        <div class="assessment-block">
+                <template x-if="checkObj">
+                    <div class="suggested-translation" x-text="checkObj.translate"></div>
+                </template>
+                <input style="font-size:18px;"
+                        x-model="currentInput" 
+                        @keyup.enter="checkInput()"
+                        x-bind:placeholder=" !checkObj ? 'Press Enter to start' : 'Enter translation' "
+                />
+                <!--
+                <button x-on:click="checkInput()">Check / Next</button>
+                -->
+            </div>
+
+            <template x-if="evaluated && wordsEvaluation.length">
+                <div class="evaluation_block">
+                    <div class="check_words_row_anchor">
+                        <div class="check_words_row">
+                            <template x-for="wordObj in wordsEvaluation">
+                                <span x-bind:class="'check_word text-outline ' + ( wordObj.isPunct ? 'punct' : ('score_' + wordObj.score)) " 
+                                    x-text="wordObj.word"
+                                    x-bind:punct="wordObj.isPunct ? wordObj.word : null"
+                                ></span>
+                            </template>
+                        </div>
+                    </div>
+                    <template x-if="currentEvaluation || currentEvaluation===0">
+                        <div x-bind:class="'evaluation text-outline eval_score_'+currentEvaluation">
+                            <span class="digit" x-text="currentEvaluation+1"></span>
+                            <span style="font-size: 16px; color:#fff;" x-text="showMotivation"></span>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
             <template x-if="data.availableTopics && data.availableTopics.length">
                 <div class="filters-settings">
                     <select style="width:100%;" x-model="selectedTopic" @change="prepareDatesArr(true); changePreparation()">
@@ -77,39 +112,6 @@ class Assessment extends TvAlpineHTMLElement {
                     >
                 </div>
             </div>
-
-            <div class="assessment-block">
-                <template x-if="checkObj">
-                    <div class="suggested-translation" x-text="checkObj.translate"></div>
-                </template>
-                <input style="font-size:18px;"
-                        x-model="currentInput" 
-                        @keyup.enter="checkInput()"
-                        x-bind:placeholder=" !checkObj ? 'Press Enter to start' : 'Enter translation' "
-                />
-                <!--
-                <button x-on:click="checkInput()">Check / Next</button>
-                -->
-            </div>
-
-            <template x-if="evaluated && wordsEvaluation.length">
-                <div class="evaluation_block">
-                    <div class="check_words_row">
-                        <template x-for="wordObj in wordsEvaluation">
-                            <span x-bind:class="'check_word text-outline ' + ( wordObj.isPunct ? 'punct' : ('score_' + wordObj.score)) " 
-                                x-text="wordObj.word"
-                                x-bind:punct="wordObj.isPunct ? wordObj.word : null"
-                            ></span>
-                        </template>
-                    </div>
-                    <template x-if="currentEvaluation || currentEvaluation===0">
-                        <div x-bind:class="'evaluation text-outline eval_score_'+currentEvaluation">
-                            <span class="digit" x-text="currentEvaluation+1"></span>
-                            <span style="font-size: 16px; color:#fff;" x-text="showMotivation"></span>
-                        </div>
-                    </template>
-                </div>
-            </template>
 
         </div>
     `;
