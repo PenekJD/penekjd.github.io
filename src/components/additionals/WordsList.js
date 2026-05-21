@@ -19,7 +19,7 @@ class WordsList extends TvAlpineHTMLElement {
         <div class="filters-block">
             <template x-if="datesArr && datesArr.length">
                 <div style="display:flex; justify-content:end; align-items:center;">
-                    <span style="margin-right:5px; font-size:12px;">Render date:</span>
+                    <span class="mobile-hide" style="margin-right:5px; font-size:12px;">Render date:</span>
                     <select x-model="selectedDate" @change="renderItemsByFilters()">
                         <template x-for="el in datesArr">
                             <option x-bind:value="el.date" x-text="showDataAsString(el.date)"></option>
@@ -29,7 +29,7 @@ class WordsList extends TvAlpineHTMLElement {
             </template>
             <template x-if="data.availableTopics && data.availableTopics.length">
                 <div>
-                    <span style="margin-right:5px; font-size:12px;">Group:</span>
+                    <span class="mobile-hide" style="margin-right:5px; font-size:12px;">Group:</span>
                     <select x-model="selectedTopic" @change="prepareDatesArr(true); renderItemsByFilters();">
                         <template x-for="topic in data.availableTopics">
                             <option :value="topic.id"

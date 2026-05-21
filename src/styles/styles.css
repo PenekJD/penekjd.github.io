@@ -202,6 +202,7 @@ site-datacontroll,
     h1,h2 {
         font-size: 1rem;
     }
+    .mobile-hide { display: none; }
 }
 
 /* * * CONTENT * * */
@@ -538,8 +539,13 @@ page:has(.eval_score_4) {
 
 @media (max-width:767px) {
     body {
-        flex-direction: column-reverse;
-        height: 100vh;
+        height: 100%;
+        position: fixed; top:0; left:0; right:0; bottom:0;
+        overflow-y: auto;
+    }
+    header {
+        position: fixed; z-index: 10;
+        bottom:0; left:0; right:0;
     }
     page,
     .page {
@@ -583,6 +589,7 @@ words-list .top-title-row {
 }
 .words-column {
     max-height: fit-content;
+    min-height: 200px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #fff transparent;
@@ -593,9 +600,12 @@ words-list .top-title-row {
     color: var(--text-main);
     font-family: var(--title-font-family);
 }
+@media (max-width: 767px) {
+    .filters-block { justify-content: space-between; }
+}
 .words-column {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     width: 100%;
 }
 
