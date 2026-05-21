@@ -33,7 +33,9 @@ class MainPage extends TvAlpineHTMLElement {
                         style="margin-bottom:0px;"
                 />
             </div>
+            <!--
             <button style="width:100%;" @click="handleEnter()">Save</button>
+            -->
         </div>
     `;
 

@@ -10,15 +10,15 @@ class Assessment extends TvAlpineHTMLElement {
                 <template x-if="isByDate || isTillRemember || isByWeak">
                     <div class="active-filters-bar">
                         <template x-if="isByWeak">
-                            <span style="font-size:22px;">🤕</span>
+                            <span>🤕</span>
                         </template>
                         <template x-if="isTillRemember">
-                            <span style="font-size:22px;">🐵</span>
+                            <span>🐵</span>
                         </template>
                         <template x-if="isByDate">
-                            <div style="display:flex; align-items:center; gap:4px; padding:4px; background-color:rgb(64, 126, 189); border-radius:6px;">
+                            <div class="filter-date">
                                 <span>🗓️</span>
-                                <select style="height:20px; padding:2px;" x-model="selectedDate" @change="changePreparation()">
+                                <select x-model="selectedDate" @change="changePreparation()">
                                     <template x-for="el in datesArr">
                                         <option x-bind:value="el.date" x-text="showDataAsString(el.date)"></option>
                                     </template>
@@ -80,16 +80,16 @@ class Assessment extends TvAlpineHTMLElement {
 
             <div class="assessment-block">
                 <template x-if="checkObj">
-                    <div style="padding:5px; font-weight:bold; font-size: 18px; background-color: #ff0; position: relative; z-index:5;"
-                            x-text="checkObj.translate"
-                    ></div>
+                    <div class="suggested-translation" x-text="checkObj.translate"></div>
                 </template>
                 <input style="font-size:18px;"
                         x-model="currentInput" 
                         @keyup.enter="checkInput()"
                         x-bind:placeholder=" !checkObj ? 'Press Enter to start' : 'Enter translation' "
                 />
+                <!--
                 <button x-on:click="checkInput()">Check / Next</button>
+                -->
             </div>
 
             <template x-if="evaluated && wordsEvaluation.length">
