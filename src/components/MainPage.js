@@ -32,10 +32,10 @@ class MainPage extends TvAlpineHTMLElement {
                         placeholder="Enter 'Translation +++ Fraze' and press Enter"
                         style="margin-bottom:0px;"
                 />
+                <button class="show-mobile round-btn-flow" 
+                    style="top:21px; right: -10px;"
+                    @click="handleEnter()">Save</button>
             </div>
-            <!--
-            <button style="width:100%;" @click="handleEnter()">Save</button>
-            -->
         </div>
     `;
 

@@ -182,6 +182,11 @@ site-datacontroll,
 }
 .logo-title h2 { font-size: 1rem; }
 .logo-title code { font-size: 0.5rem; color: var(--text-main); white-space: nowrap; }
+.round-btn-flow { 
+    aspect-ratio: 1/1; position: absolute;
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; right: 0;
+}
 @media (max-width:767px) {
     site-menu ul {
         padding: 12px 0px;
@@ -337,7 +342,7 @@ site-assessment {
 .assessment-block {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 100%; position: relative;
 }
 .assessment-block input {
     font-family: var(--title-font-family);
@@ -543,6 +548,7 @@ page:has(.eval_score_4) {
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }
 
+.show-mobile { display: none; }
 @media (max-width:767px) {
     body {
         height: 100%;
@@ -572,6 +578,7 @@ page:has(.eval_score_4) {
     }
     site-main-page,
     site-assessment { width: 90%; }
+    .show-mobile { display: inherit; }
 }
 
 
