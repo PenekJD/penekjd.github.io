@@ -29,10 +29,10 @@ class Assessment extends TvAlpineHTMLElement {
                 </template>
             </div>
 
-                        <div class="assessment-block">
-                <template x-if="checkObj">
-                    <div class="suggested-translation" x-text="checkObj.translate"></div>
-                </template>
+            <template x-if="checkObj">
+                <div class="suggested-translation" style="margin-top:1rem;" x-text="checkObj.translate"></div>
+            </template>
+            <div class="assessment-block">
                 <input style="font-size:18px;"
                         x-model="currentInput" 
                         @keyup.enter="checkInput()"
