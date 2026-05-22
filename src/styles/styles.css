@@ -394,7 +394,6 @@ site-assessment {
     transform: translateY(100%);
     background-color: rgba(0,0,0,0.5);
     backdrop-filter: blur(10px);
-    pointer-events: none;
 }
 .text-outline {
     text-shadow: 0px 1px 1px rgba(0,0,0,0.5), 1px 1px 1px rgba(0,0,0,0.5), 1px 0px 1px rgba(0,0,0,0.5), -1px 0px 1px rgba(0,0,0,0.5), -1px -1px 1px rgba(0,0,0,0.5), 0px -1px 1px rgba(0,0,0,0.5);
@@ -403,7 +402,7 @@ site-assessment {
     padding: 10px 0;
     font-weight:bold;
     font-family: Tahoma, sans-serif;
-    font-size: 20px;
+    font-size: 18px;
 }
 .punct {
     margin-left: -0.4rem;

@@ -10,7 +10,7 @@ class SiteMenu extends TvAlpineHTMLElement {
                 Languager
             </h2>
         </a>
-        <code>v 2.0.6</code>
+        <code>v 2.0.7</code>
     </section>
     <nav>
         <ul>
