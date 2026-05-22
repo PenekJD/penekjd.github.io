@@ -7,7 +7,7 @@
 
 /** Variables */
 :root {
-    --main-theme-color: rgb(92, 109, 235);
+    --main-theme-color: rgb(39, 130, 166);
     --bg-color: #222;
     --bg-secondary: #111;
     --bg-highlight: #333;
@@ -43,6 +43,7 @@ button {
     color: var(--text-main);
     font-weight:bold;
     border-radius: 999rem;
+    font-family: 'monospace', sans-serif;
 }
 button:hover {
     background-color: rgb(102, 163, 224);
@@ -121,7 +122,7 @@ site-menu {
     box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
     min-height: 100vh;
     width: 100%;
-    min-width: 200px;
+    min-width: 180px;
 }
 site-menu ul {
     padding: 0 1rem;
@@ -178,9 +179,12 @@ site-datacontroll,
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 2rem; padding: 0 0.5rem;
+    gap: 1rem; padding: 0 0.5rem;
+    font-family: var(--title-font-family);
 }
 .logo-title h2 { font-size: 1rem; }
+.logo-title a { text-decoration: none; color:var(--text-main); transition: 0.3s; }
+    .logo-title a:hover { color: var(--main-theme-color); }
 .logo-title code { font-size: 0.5rem; color: var(--text-main); white-space: nowrap; }
 .round-btn-flow { 
     aspect-ratio: 1/1; position: absolute;
@@ -381,15 +385,16 @@ site-assessment {
     flex-direction:row;
     flex-wrap: wrap;
     column-gap: 8px;
-    padding: 10px;
-    margin: 0 -10px;
+    padding: 10px 16px;
+    margin: 0 -16px;
     border-radius: 999rem;
     width: 100%;
     position: absolute;
-    bottom: -0.5rem;
+    bottom: 0;
     transform: translateY(100%);
     background-color: rgba(0,0,0,0.5);
     backdrop-filter: blur(10px);
+    pointer-events: none;
 }
 .text-outline {
     text-shadow: 0px 1px 1px rgba(0,0,0,0.5), 1px 1px 1px rgba(0,0,0,0.5), 1px 0px 1px rgba(0,0,0,0.5), -1px 0px 1px rgba(0,0,0,0.5), -1px -1px 1px rgba(0,0,0,0.5), 0px -1px 1px rgba(0,0,0,0.5);
@@ -458,35 +463,35 @@ site-assessment {
 page:has(.eval_score_0) {
     background-image: radial-gradient(
         ellipse at top center,
-        var(--assessment-color-verybad) -50%,
+        var(--assessment-color-verybad) -100%,
         transparent 70%
     );
 }
 page:has(.eval_score_1) {
     background-image: radial-gradient(
         ellipse at top center,
-        var(--assessment-color-bad) -50%,
+        var(--assessment-color-bad) -100%,
         transparent 70%
     );
 }
 page:has(.eval_score_2) {
     background-image: radial-gradient(
         ellipse at top center,
-        var(--assessment-color-medium) -50%,
+        var(--assessment-color-medium) -100%,
         transparent 70%
     );
 }
 page:has(.eval_score_3) {
     background-image: radial-gradient(
         ellipse at top center,
-        var(--assessment-color-better) -50%,
+        var(--assessment-color-better) -100%,
         transparent 70%
     );
 }
 page:has(.eval_score_4) {
     background-image: radial-gradient(
         ellipse at top center,
-        var(--assessment-color-good) -50%,
+        var(--assessment-color-good) -100%,
         transparent 70%
     );
 }
@@ -543,6 +548,7 @@ page:has(.eval_score_4) {
     justify-content: space-between;
     align-items: center;
 }
+.gap-1 { gap: 0.25rem; }
 .w-full { width: 100%; }
 .flex-row { display: flex; }
 .items-center { align-items: center; }
@@ -571,7 +577,7 @@ page:has(.eval_score_4) {
         justify-content: space-between;
     }
     site-menu .logo-title { display: none; }
-    site-menu nav { flex-grow: 1; }
+    site-menu nav { flex-grow: 1; border-top: none; }
     site-menu ul {
         flex-direction: row; margin: 0.5rem 0;
         width: 100%; justify-content: space-around;
@@ -663,7 +669,7 @@ words-list .top-title-row {
 .string-row .translate {
     position: absolute;
     display: none;
-    transform: translateY(-100%);
+    transform: translateX(0);
     background-color: var(--extra-info-bg);
     z-index: 11;
     border-radius: 999rem;

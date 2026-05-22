@@ -38,7 +38,7 @@ class Assessment extends TvAlpineHTMLElement {
                         @keyup.enter="checkInput()"
                         x-bind:placeholder=" !checkObj ? 'Press Enter to start' : 'Enter translation' "
                 />
-                <button class="show-mobile round-btn-flow" 
+                <button class="round-btn-flow" 
                     style="top: 22px; right: -5px;"
                     x-on:click="checkInput()">Go</button>
             </div>

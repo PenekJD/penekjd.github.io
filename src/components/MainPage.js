@@ -8,7 +8,7 @@ class MainPage extends TvAlpineHTMLElement {
             <div class="row-between w-full">
                 <h2>Log</h2>
                 <template x-if="data && data.availableTopics && data.availableTopics.length">
-                    <div class="row-between">
+                    <div class="row-between gap-1">
                         <select x-model="selectedTopic" @change="callUpdate()">
                             <template x-for="topic in data.availableTopics">
                                 <option :value="topic.id"
@@ -17,7 +17,7 @@ class MainPage extends TvAlpineHTMLElement {
                                 </option>
                             </template>
                         </select>
-                        <button style="font-size:8px;" x-on:click="addNewTopic()">ADD TOPIC</button>
+                        <button style="font-size:8px;" x-on:click="addNewTopic()">Add topic</button>
                     </div>
                 </template>
             </div>
@@ -32,8 +32,8 @@ class MainPage extends TvAlpineHTMLElement {
                         placeholder="Enter 'Translation +++ Fraze' and press Enter"
                         style="margin-bottom:0px;"
                 />
-                <button class="show-mobile round-btn-flow" 
-                    style="top:21px; right: -10px;"
+                <button class="round-btn-flow" 
+                    style="top:21px; right: -10px; font-size:10px;"
                     @click="handleEnter()">Save</button>
             </div>
         </div>

@@ -4,10 +4,13 @@ class SiteMenu extends TvAlpineHTMLElement {
 
     TV_HTML = /*html*/`
     <section class="logo-title">
-        <h2>
-            Languager
-        </h2>
-        <code>v 2.0.5</code>
+        <a href="/" class="flex-row items-center justify-center gap-1">
+            <img src="/favicon.ico" width="16" height="16" loading="lazy" />
+            <h2>
+                Languager
+            </h2>
+        </a>
+        <code>v 2.0.6</code>
     </section>
     <nav>
         <ul>
