@@ -115,7 +115,7 @@ class MainPage extends TvAlpineHTMLElement {
 
             receiveData(data) {
                 if (!data) {
-                    this.data = window.globalConfig ? window.globalConfig.data : {};
+                    this.data = window.globalConfig ? window.globalConfig.data : this.data;
                 } else {
                     this.data = data;
                 }
