@@ -360,9 +360,13 @@ site-assessment {
     box-shadow: 0 0 110px var(--main-theme-color);
     color: #fff;
 }
-.assessment-block input:focus {
-    box-shadow: 0 0 20px var(--main-theme-color);
-}
+.assessment-block input:focus { box-shadow: 0 0 20px var(--main-theme-color); }
+.assessment-level-4 .assessment-block input { box-shadow: 0 0 110px var(--assessment-color-better); }
+    .assessment-level-4 .assessment-block input:focus { box-shadow: 0 0 20px var(--assessment-color-better); }
+.assessment-level-3 .assessment-block input { box-shadow: 0 0 110px var(--assessment-color-medium); }
+    .assessment-level-3 .assessment-block input:focus { box-shadow: 0 0 20px var(--assessment-color-medium); }
+.assessment-level-2 .assessment-block input { box-shadow: 0 0 110px var(--assessment-color-bad); }
+    .assessment-level-2 .assessment-block input:focus { box-shadow: 0 0 20px var(--assessment-color-bad); }
 .suggested-translation {
     padding: 0.5rem 1rem; font-weight:bold; font-size: 18px; 
     background-color: var(--extra-info-bg); 
@@ -513,7 +517,7 @@ page:has(.eval_score_4) {
     justify-content:end;
     align-items: center;
     gap:8px;
-    margin:-5px 0px 5px;
+    margin:-5px 0px 0;
     font-size: 22px;
 }
 @media (max-width:767px) {

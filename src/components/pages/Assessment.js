@@ -3,17 +3,26 @@ class Assessment extends TvAlpineHTMLElement {
     ALPINE_COMPONENT_KEY = 'initAssessment';
 
     TV_HTML = /*html*/`
-        <div>
+        <div :class="isByWeak && ('assessment-level-' + weakestLevelSelected)">
 
             <div class="title">
                 <h2>Assessment</h2>
                 <template x-if="isByDate || isTillRemember || isByWeak">
                     <div class="active-filters-bar">
-                        <template x-if="isByWeak">
-                            <span>🤕</span>
-                        </template>
                         <template x-if="isTillRemember">
                             <span>🐵</span>
+                        </template>
+                        <template x-if="isByWeak">
+                            <div class="filter-date">
+                                <span>🤕</span>
+                                <select x-model.number="weakestLevelSelected" @change="changePreparation()"
+                                    title="Level of knowledge"
+                                >
+                                    <template x-for="level in weakestLevels">
+                                        <option x-bind:value="level" x-text="level"></option>
+                                    </template>
+                                </select>
+                            </div>
                         </template>
                         <template x-if="isByDate">
                             <div class="filter-date">
@@ -132,6 +141,8 @@ class Assessment extends TvAlpineHTMLElement {
             firstIdx: 0,
             lastIdx: 0,
             assessmentTypes: ['Order', 'Random'],
+            weakestLevelSelected: 4,
+            weakestLevels: [4,3,2],
             motivations: {
                 4: ['🥳 Fantastic', '👱 Your mom could proud of you', '🤟 Damn you\'re good', '💪 Thats ma man', '💣 BOOM-bastic!', '🌟 You\'re the best!', '🤩 Superman - it\'s You!'],
                 3: ['Nice work', 'Well done', 'Keep it up!', 'Good!', 'Nicely done'],
@@ -364,7 +375,7 @@ class Assessment extends TvAlpineHTMLElement {
                 if (this.isByWeak) {
                     newArr = newArr.filter( el => {
                         if (!el.average_score) { return false; }
-                        if (el.average_score < 4) { return true; }
+                        if (el.average_score < this.weakestLevelSelected) { return true; }
                         return false;
                     } );
                     newArr = newArr.sort( (a,b) => a.average_score - b.average_score );
