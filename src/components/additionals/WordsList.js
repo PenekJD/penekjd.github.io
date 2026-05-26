@@ -3,16 +3,16 @@ class WordsList extends TvAlpineHTMLElement {
     ALPINE_COMPONENT_KEY = 'initWordsList';
 
     TV_HTML = /*html*/`
-    <div class="top-title-row row-between">
-        <h2>Fraze base</h2>
-        <span x-text="'🪙 '+(data.words_pares ? data.words_pares.length : 0)"></span>
-    </div>
-
-    <div style="width:100%; margin: 0 0 1rem;">
-        <button style="margin: 8px 0px 0px; width:100%;"
-                x-text="opened ? 'Hide' : 'Open'"
-                @click="opened = !opened"></button>
-    </div>
+    <button class="top-title-row row-between button-dropdown" 
+        :class="{ 'opened' : opened }"
+        @click="opened = !opened"
+    >
+        <h2>My dictionary</h2>
+        <span class="row-between">
+            <span x-text="'🪙 '+(data.words_pares ? data.words_pares.length : 0)"></span>
+            <span class="icon flex-row items-center justify-center">&#10095;</span>
+        </span>
+    </button>
 
     <template x-if="opened">
     <div class="word-list-block">
