@@ -5,14 +5,14 @@ class SiteMenu extends TvAlpineHTMLElement {
     TV_HTML = /*html*/`
     <section class="logo-title">
         <a href="/" class="flex-row items-center justify-center gap-1">
-            <img src="/favicon.ico" width="16" height="16" loading="lazy" />
+            <img src="/favicon.ico" width="16" height="16" loading="lazy" alt="Logo" />
             <h2>
                 Languager
             </h2>
         </a>
         <code>v 2.0.9</code>
     </section>
-    <nav>
+    <nav role="navigation">
         <ul>
             <template x-for="(item, idx) in menuArr">
                 <li>
@@ -22,7 +22,7 @@ class SiteMenu extends TvAlpineHTMLElement {
                         }"
                         class="menu-tab"
                     >
-                        <img class="icon" :src="item.icon" width="12" height="12" />
+                        <img class="icon" :src="item.icon" width="12" height="12" x-bind:alt="item.title" />
                         <span class="text" x-text="item.title"></span>
                     </a>
                 </li>

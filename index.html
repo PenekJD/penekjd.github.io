@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Languager</title>
-    <script src="/src/lib/tv.js"></script>
-    <script defer src="/src/lib/alpine.js"></script>
-    <script src="/app.js"></script>
-    <link href="/src/styles/styles.css" rel="stylesheet" type="text/css"/>
-</head>
-<body>
-    <header>
-        <site-menu></site-menu>
-    </header>
-    <page>
-        <site-datahandler></site-datahandler>
-        <site-main-page></site-main-page>
-        <words-list></words-list>
-    </page>
-    <site-top-additionals></site-top-additionals>
-</body>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Languager</title>
+        <script src="/src/lib/tv.js"></script>
+        <script defer src="/src/lib/alpine.js"></script>
+        <script src="/app.js"></script>
+        <link href="/src/styles/styles.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <header>
+            <site-menu></site-menu>
+        </header>
+        <page role="main">
+            <site-datahandler></site-datahandler>
+            <site-main-page></site-main-page>
+            <words-list></words-list>
+        </page>
+        <site-top-additionals></site-top-additionals>
+    </body>
+</html>

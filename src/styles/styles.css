@@ -27,7 +27,7 @@
 /* App styles */
 h1,
 h2 {
-    font-family: var(----title-font-family);
+    font-family: var(--title-font-family);
     font-weight: 700;
     font-size:20px;
     min-height: 20px;

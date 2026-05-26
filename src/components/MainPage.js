@@ -9,7 +9,7 @@ class MainPage extends TvAlpineHTMLElement {
                 <h2>Log</h2>
                 <template x-if="data && data.availableTopics && data.availableTopics.length">
                     <div class="row-between gap-1">
-                        <select x-model="selectedTopic" @change="callUpdate()">
+                        <select x-model="selectedTopic" @change="callUpdate()" title="Topic">
                             <template x-for="topic in data.availableTopics">
                                 <option :value="topic.id"
                                         x-text="topic.title"

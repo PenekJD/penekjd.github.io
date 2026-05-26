@@ -16,8 +16,7 @@ class Assessment extends TvAlpineHTMLElement {
                             <div class="filter-date">
                                 <span>🤕</span>
                                 <select x-model.number="weakestLevelSelected" @change="changePreparation()"
-                                    title="Level of knowledge"
-                                >
+                                    title="Level of knowledge">
                                     <template x-for="level in weakestLevels">
                                         <option x-bind:value="level" x-text="level"></option>
                                     </template>
@@ -27,7 +26,8 @@ class Assessment extends TvAlpineHTMLElement {
                         <template x-if="isByDate">
                             <div class="filter-date">
                                 <span>🗓️</span>
-                                <select x-model="selectedDate" @change="changePreparation()">
+                                <select x-model="selectedDate" @change="changePreparation()"
+                                    title="Sort by Date">
                                     <template x-for="el in datesArr">
                                         <option x-bind:value="el.date" x-text="showDataAsString(el.date)"></option>
                                     </template>
@@ -43,9 +43,9 @@ class Assessment extends TvAlpineHTMLElement {
             </template>
             <div class="assessment-block">
                 <input style="font-size:18px;"
-                        x-model="currentInput" 
-                        @keyup.enter="checkInput()"
-                        x-bind:placeholder=" !checkObj ? 'Press Enter to start' : 'Enter translation' "
+                    x-model="currentInput" 
+                    @keyup.enter="checkInput()"
+                    x-bind:placeholder=" !checkObj ? 'Press Enter to start' : 'Enter translation' "
                 />
                 <button class="round-btn-flow" 
                     style="top: 22px; right: -5px;"
@@ -87,11 +87,11 @@ class Assessment extends TvAlpineHTMLElement {
             </template>
             <div class="filters-settings">
                 <div style="width: 200px;">
-                    <div class="display: flex; flex-wrap: nowrap; flex-direction:row; gap:5px; align-items:center;">
-                        <span x-text="type == 0 ? '⬆️' : '🎲'"></span>
+                    <div class="flex-row items-center gap-1">
+                        <span x-text="type == 0 ? '♻️' : '🎲'"></span>
                         <span x-text="selectedIdx+1"></span> /
                         <span x-text="arrayForRender && arrayForRender.length"></span>
-                        <select x-model="type" style="margin-left:10px;">
+                        <select x-model="type" title="Order type">
                             <template x-for="(type, idx) in assessmentTypes">
                                 <option :value="idx" x-text="type"></option>
                             </template>
