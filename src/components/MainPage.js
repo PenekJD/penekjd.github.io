@@ -6,7 +6,10 @@ class MainPage extends TvAlpineHTMLElement {
     TV_HTML = /*html*/`
         <div>
             <div class="row-between w-full">
-                <h2>Log</h2>
+                <span class="flex-row items-center gap-1">
+                    <img class="icon" width="16" height="16" src="/data/svg/NotesBook.svg" alt="Progress">
+                    <h2>Log</h2>
+                </span>
                 <template x-if="data && data.availableTopics && data.availableTopics.length">
                     <div class="row-between gap-1">
                         <select x-model="selectedTopic" @change="callUpdate()" title="Topic">

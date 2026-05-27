@@ -4,10 +4,13 @@ class DataControll extends TvAlpineHTMLElement {
 
     TV_HTML = /*html*/`
         <div>
-            <h1>Progress data</h1>
+            <span class="flex-row items-center gap-1">
+                <img class="icon" width="24" height="24" src="/data/svg/DataTransfer.svg" alt="Progress">
+                <h1>Progress data</h1>
+            </span>
             <table class="progress_table">
                 <tr>
-                    <td><button @click="exportData()">Export</button></td>
+                    <td><button @click="exportData()">📤 Export</button></td>
                     <td>
                         <template x-if="data">
                             <div>
@@ -33,8 +36,9 @@ class DataControll extends TvAlpineHTMLElement {
                 </tr>
                 <tr>
                     <td>
-                        <button x-bind:disabled="!dataToImport ? true : false" 
-                                @click="importData()">Import</button>
+                        <button x-bind:disabled="!dataToImport ? true : false"
+                            :style="{ opacity: dataToImport ? '1' : '0.1' }"
+                            @click="importData()">⬇️ Import</button>
                     </td>
                     <td>
                         <input x-ref="fileinput" type="file" @change="selectFile($event)"/>

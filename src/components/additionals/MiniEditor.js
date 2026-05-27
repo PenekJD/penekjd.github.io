@@ -9,7 +9,7 @@ class MiniEditor extends TvAlpineHTMLElement {
         <section class="mini-editor-block">
             <div class="mini-editor-backdrop" @click="$dispatch('dispatch-mini-editor', null)"></div>
             <div class="mini-editor-container">
-                <h2>🚧 Mini Editor</h2>
+                <h2 style="margin-top:0;">🚧 Mini Editor</h2>
                 <div>
                     <div class="input-label">
                         <label>Native language</label>

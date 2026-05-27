@@ -6,7 +6,10 @@ class Assessment extends TvAlpineHTMLElement {
         <div :class="isByWeak && ('assessment-level-' + weakestLevelSelected)">
 
             <div class="title">
-                <h2>Assessment</h2>
+                <span class="flex-row items-center gap-1">
+                    <img class="icon" width="18" height="18" src="/data/svg/Performance.svg" alt="Progress">
+                    <h2>Assessment</h2>
+                </span>
                 <template x-if="isByDate || isTillRemember || isByWeak">
                     <div class="active-filters-bar">
                         <template x-if="isTillRemember">
@@ -77,7 +80,8 @@ class Assessment extends TvAlpineHTMLElement {
 
             <template x-if="data.availableTopics && data.availableTopics.length">
                 <div class="filters-settings">
-                    <select style="width:100%;" x-model="selectedTopic" @change="prepareDatesArr(true); changePreparation()">
+                    <select style="width:100%;" x-model="selectedTopic" title="Select the topic"
+                        @change="prepareDatesArr(true); changePreparation()">
                         <template x-for="topic in data.availableTopics">
                             <option :value="topic.id"
                                     x-text="topic.title"
@@ -104,24 +108,18 @@ class Assessment extends TvAlpineHTMLElement {
                     <div @click="isByDate=!isByDate; changePreparation();"
                         class="filter-checkbox">
                         <span style="">Group by date:</span>
-                        <input type="checkbox"
-                                x-model="isByDate"
-                        >
+                        <input type="checkbox" x-model="isByDate" title="Group by date" />
                     </div>
                 </template>
                 <div @click="isTillRemember=!isTillRemember;" 
                         class="filter-checkbox">
                     <span>Till remember:</span>
-                    <input type="checkbox"
-                            x-model="isTillRemember"
-                    >
+                    <input type="checkbox" x-model="isTillRemember" title="Try to perfection" />
                 </div>
                 <div @click="isByWeak=!isByWeak; changePreparation();" 
                         class="filter-checkbox">
                     <span>Weakests:</span>
-                    <input type="checkbox"
-                            x-model="isByWeak"
-                    >
+                    <input type="checkbox" x-model="isByWeak" title="Only weakests" />
                 </div>
             </div>
 
