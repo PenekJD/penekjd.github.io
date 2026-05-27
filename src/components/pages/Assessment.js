@@ -39,7 +39,9 @@ class Assessment extends TvAlpineHTMLElement {
             </div>
 
             <template x-if="checkObj">
-                <div class="suggested-translation" style="margin-top:1rem;" x-text="checkObj.translate"></div>
+                <div style="margin-top:1rem;"
+                    :class="'suggested-translation ' + (checkObj.average_score ? 'level_' + checkObj.average_score : '')"
+                    x-text="checkObj.translate"></div>
             </template>
             <div class="assessment-block">
                 <input style="font-size:18px;"
@@ -274,6 +276,7 @@ class Assessment extends TvAlpineHTMLElement {
                     }
                 }
                 this.checkObj = this.arrayForRender[this.selectedIdx];
+                console.log(this.checkObj);
             },
 
             evaluateInput(){

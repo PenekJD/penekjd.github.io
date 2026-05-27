@@ -51,7 +51,9 @@ class WordsList extends TvAlpineHTMLElement {
                         <template x-if="el.id === hoverID">
                             <div class="translate">
                                 <span x-text="el.translate"></span>
-                                <input type="text" x-model="el.translate" @keyup.enter="callUpdate()"/>
+                                <input type="text" :value="el.translate" 
+                                    @click="handleMiniEditor(el)" title="Click to Edit"
+                                />
                             </div>
                         </template>
                         <div class="lang" x-text="el.lang"></div>
@@ -88,6 +90,10 @@ class WordsList extends TvAlpineHTMLElement {
             showDataAsString(dateStr) {
                 let dateObj = new Date(dateStr);
                 return this.formatter.format(dateObj);
+            },
+
+            handleMiniEditor(obj) {
+                this.$dispatch('dispatch-mini-editor', obj);
             },
 
             prepareDatesArr(force){
@@ -165,6 +171,9 @@ class WordsList extends TvAlpineHTMLElement {
                 });
                 window.addEventListener('toggle-words-list', function() {
                     self.opened = true;
+                });
+                window.addEventListener('update-words-list', function() {
+                    self.callUpdate();
                 });
             }
         }

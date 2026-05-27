@@ -8,7 +8,7 @@ class TopAdditionals extends TvAlpineHTMLElement {
                 <div class="top_additionals_block">
                     <div class="top_additionals" x-bind:title="levels[level].title + ' ('+score+')'">
                         <div class="t-a_row">
-                            <span style="text-transform: capitalize;" 
+                            <span class="my-status-title"
                                 x-text="levels[level].title + ' ('+score+')'"></span>
                         </div>
                         <template x-if="nextLevelScore">
@@ -47,11 +47,11 @@ class TopAdditionals extends TvAlpineHTMLElement {
             levels: [
                 { title: 'Newbie', icon: '🐣', score: 0 },
                 { title: 'Beginner', icon: '🐥', score: 30 },
-                { title: 'You know something', icon: '🐢', score: 50 },
-                { title: 'You can ask a route', icon: '🐸', score: 90 },
-                { title: 'You can talk', icon: '🐵', score: 120 },
+                { title: 'You know something', icon: '🤠', score: 50 },
+                { title: 'You can ask a route', icon: '🗺️', score: 90 },
+                { title: 'You can talk', icon: '🤓', score: 120 },
                 { title: 'Good-looking', icon: '🦉', score: 180 },
-                { title: 'Tigerrr', icon: '🐯', score: 300 },
+                { title: 'Mr. Brain', icon: '🧠', score: 300 },
                 { title: 'Stunning', icon: '🦄', score: 500 },
             ],
 
