@@ -105,11 +105,7 @@ site-main-page {
     width: 70%;
     min-height: 134px;
 }
-
-words-list {
-    min-height: 150px;
-    max-height: 60%;
-}
+words-list { min-height: 60px; max-height: 50%; }
 
 /* * * MENU * * */
 site-menu {
