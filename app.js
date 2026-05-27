@@ -12,3 +12,4 @@ $tv.import({ define: 'site-assessment', file: '/src/components/pages/Assessment'
 $tv.import({ define: 'site-datacontroll', file: '/src/components/pages/DataControll'});
 $tv.import({ define: 'site-button', file: '/src/components/additionals/Button'});
 $tv.import({ define: 'words-list', file: '/src/components/additionals/WordsList'});
+$tv.import({ define: 'site-minieditor', file: '/src/components/additionals/MiniEditor'});
