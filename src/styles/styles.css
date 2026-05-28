@@ -342,10 +342,12 @@ site-assessment {
 .assessment-block input:focus { box-shadow: 0 0 20px var(--main-theme-color); }
 .assessment-level-4 .assessment-block input { box-shadow: 0 0 110px var(--assessment-color-better); }
     .assessment-level-4 .assessment-block input:focus { box-shadow: 0 0 20px var(--assessment-color-better); }
-.assessment-level-3 .assessment-block input { box-shadow: 0 0 110px var(--assessment-color-medium); }
-    .assessment-level-3 .assessment-block input:focus { box-shadow: 0 0 20px var(--assessment-color-medium); }
-.assessment-level-2 .assessment-block input { box-shadow: 0 0 110px var(--assessment-color-bad); }
-    .assessment-level-2 .assessment-block input:focus { box-shadow: 0 0 20px var(--assessment-color-bad); }
+.assessment-level-35 .assessment-block input { box-shadow: 0 0 110px var(--assessment-color-medium); }
+    .assessment-level-35 .assessment-block input:focus { box-shadow: 0 0 20px var(--assessment-color-medium); }
+.assessment-level-3 .assessment-block input { box-shadow: 0 0 110px var(--assessment-color-bad); }
+    .assessment-level-3 .assessment-block input:focus { box-shadow: 0 0 20px var(--assessment-color-bad); }
+.assessment-level-2 .assessment-block input { box-shadow: 0 0 110px var(--assessment-color-verybad); }
+    .assessment-level-2 .assessment-block input:focus { box-shadow: 0 0 20px var(--assessment-color-verybad); }
 .suggested-translation {
     padding: 0.5rem 1.5rem 0.5rem 1rem; font-weight:bold; font-size: 18px; 
     background-color: var(--extra-info-bg); 
@@ -357,7 +359,7 @@ site-assessment {
     position:absolute; right: 10px; width: 12px; aspect-ratio: 1/1; 
 }
 .suggested-translation.level_1::after { background-color: var(--assessment-color-verybad); }
-.suggested-translation.level_2::after { background-color: var(--assessment-color-bad); }
+.suggested-translation.level_2::after { background-color: var(--assessment-color-medium); }
 .suggested-translation.level_3::after { background-color: var(--assessment-color-better); }
 .suggested-translation.level_4::after { background-color: var(--assessment-color-good); }
 

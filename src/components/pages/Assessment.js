@@ -3,7 +3,7 @@ class Assessment extends TvAlpineHTMLElement {
     ALPINE_COMPONENT_KEY = 'initAssessment';
 
     TV_HTML = /*html*/`
-        <div :class="isByWeak && ('assessment-level-' + weakestLevelSelected)">
+        <div :class="isByWeak && ('assessment-level-' + weakestLevelSelected).replace('.', '')">
 
             <div class="title">
                 <span class="flex-row items-center gap-1">
@@ -143,7 +143,7 @@ class Assessment extends TvAlpineHTMLElement {
             lastIdx: 0,
             assessmentTypes: ['Order', 'Random'],
             weakestLevelSelected: 4,
-            weakestLevels: [4,3,2],
+            weakestLevels: [4,3.5,3,2],
             motivations: {
                 4: ['🥳 Fantastic', '👱 Your mom could proud of you', '🤟 Damn you\'re good', '💪 Thats ma man', '💣 BOOM-bastic!', '🌟 You\'re the best!', '🤩 Superman - it\'s You!'],
                 3: ['Nice work', 'Well done', 'Keep it up!', 'Good!', 'Nicely done'],
@@ -274,7 +274,6 @@ class Assessment extends TvAlpineHTMLElement {
                     }
                 }
                 this.checkObj = this.arrayForRender[this.selectedIdx];
-                console.log(this.checkObj);
             },
 
             evaluateInput(){
@@ -377,7 +376,8 @@ class Assessment extends TvAlpineHTMLElement {
                 if (this.isByWeak) {
                     newArr = newArr.filter( el => {
                         if (!el.average_score) { return false; }
-                        if (el.average_score < this.weakestLevelSelected) { return true; }
+                        let honestAverageScore = el.common_score / el.check_numbers;
+                        if (honestAverageScore < this.weakestLevelSelected ) { return true; }
                         return false;
                     } );
                     newArr = newArr.sort( (a,b) => a.average_score - b.average_score );
