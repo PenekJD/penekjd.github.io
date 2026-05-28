@@ -97,9 +97,9 @@ class Assessment extends TvAlpineHTMLElement {
                         <span x-text="type == 0 ? '♻️' : '🎲'"></span>
                         <span x-text="selectedIdx+1"></span> /
                         <span x-text="arrayForRender && arrayForRender.length"></span>
-                        <select x-model="type" title="Order type">
-                            <template x-for="(type, idx) in assessmentTypes">
-                                <option :value="idx" x-text="type"></option>
+                        <select x-model.number="type" title="Order type">
+                            <template x-for="(curType, idx) in assessmentTypes">
+                                <option :value="idx" x-text="curType" x-bind:selected="type === idx"></option>
                             </template>
                         </select>
                     </div>
@@ -218,13 +218,46 @@ class Assessment extends TvAlpineHTMLElement {
             data: {},
             randomStarted: false,
             usedRandomIndexes: [],
+            userPreferencesStorageCode: 'languager-preferences-assessment',
+            savingTimeout: null,
+            savingDebounceMs: 1000,
 
             init(){
                 this.receiveData();
                 this.addHookEvents();
+                this.bindUserPreferences();
                 this.$watch('type', (value, oldValue) => {
                     this.changePreparation();
+                    this.saveSettingsPreferences();
                 });
+                this.$watch('isByWeak', this.saveSettingsPreferences.bind(this));
+                this.$watch('isTillRemember', this.saveSettingsPreferences.bind(this));
+                this.$watch('isByDate', this.saveSettingsPreferences.bind(this));
+            },
+
+            bindUserPreferences() {
+                let checkSavedData = window.localStorage.getItem(this.userPreferencesStorageCode);
+                if (!checkSavedData) return;
+                checkSavedData = JSON.parse(checkSavedData);
+                this.type = checkSavedData.type;
+                this.isByWeak = checkSavedData.isByWeak;
+                this.isTillRemember = checkSavedData.isTillRemember;
+                this.isByDate = checkSavedData.isByDate;
+                this.$nextTick(() => { this.changePreparation(); })
+            },
+
+            saveSettingsPreferences() {
+                let self = this;
+                if (this.savingTimeout) clearTimeout(this.savingTimeout);
+                this.savingTimeout = setTimeout(() => {
+                    let preferencesData = {
+                        type: self.type,
+                        isByWeak: self.isByWeak,
+                        isTillRemember: self.isTillRemember,
+                        isByDate: self.isByDate
+                    }
+                    window.localStorage.setItem(self.userPreferencesStorageCode, JSON.stringify(preferencesData));
+                }, this.savingDebounceMs);
             },
 
             checkInput(){
