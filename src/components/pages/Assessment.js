@@ -43,6 +43,7 @@ class Assessment extends TvAlpineHTMLElement {
 
             <template x-if="checkObj">
                 <div style="margin-top:1rem; cursor:pointer;"
+                    :style="{ cursor: (evaluated && wordsEvaluation.length ? 'help' : 'pointer') }"
                     @click="openMiniEditor()"
                     :class="'suggested-translation ' + (checkObj.average_score ? 'level_' + checkObj.average_score : '')"
                     x-text="checkObj.translate"></div>
@@ -264,7 +265,7 @@ class Assessment extends TvAlpineHTMLElement {
             },
 
             openMiniEditor() {
-                if (this.checkObj && this.isDoubleClicked) {
+                if (this.checkObj && this.evaluated && this.wordsEvaluation.length && this.isDoubleClicked) {
                     this.$dispatch('dispatch-mini-editor', this.checkObj);
                 }
                 this.isDoubleClicked = true;
