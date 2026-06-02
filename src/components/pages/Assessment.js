@@ -42,7 +42,8 @@ class Assessment extends TvAlpineHTMLElement {
             </div>
 
             <template x-if="checkObj">
-                <div style="margin-top:1rem;"
+                <div style="margin-top:1rem; cursor:pointer;"
+                    @click="openMiniEditor()"
                     :class="'suggested-translation ' + (checkObj.average_score ? 'level_' + checkObj.average_score : '')"
                     x-text="checkObj.translate"></div>
             </template>
@@ -221,6 +222,8 @@ class Assessment extends TvAlpineHTMLElement {
             userPreferencesStorageCode: 'languager-preferences-assessment',
             savingTimeout: null,
             savingDebounceMs: 1000,
+            isDoubleClicked: false,
+            doubleClickTimeoutMs: 300,
 
             init(){
                 this.receiveData();
@@ -258,6 +261,14 @@ class Assessment extends TvAlpineHTMLElement {
                     }
                     window.localStorage.setItem(self.userPreferencesStorageCode, JSON.stringify(preferencesData));
                 }, this.savingDebounceMs);
+            },
+
+            openMiniEditor() {
+                if (this.checkObj && this.isDoubleClicked) {
+                    this.$dispatch('dispatch-mini-editor', this.checkObj);
+                }
+                this.isDoubleClicked = true;
+                setTimeout(() => { this.isDoubleClicked = false; }, this.doubleClickTimeoutMs);
             },
 
             checkInput(){
@@ -482,7 +493,10 @@ class Assessment extends TvAlpineHTMLElement {
                 });
                 window.addEventListener('check_comp', function(){
                     console.log(self.data);
-                })
+                });
+                window.addEventListener('update-words-list', function() {
+                    self.callUpdate();
+                });
             }
         }
     }
