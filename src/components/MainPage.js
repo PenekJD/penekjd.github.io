@@ -25,7 +25,8 @@ class MainPage extends TvAlpineHTMLElement {
                 </template>
             </div>
             <template x-if="alert">
-                <div style="color:#f00; position:relative; z-index:10; background-color:#faa; padding:10px;" 
+                <div style="color:#f00; position:relative; z-index:10; background-color:#faa; padding:10px;"
+                        data-testid="error-message"
                         x-html="'ENTER: '+alert"></div>
             </template>
             <div class="abstract_input_field">
