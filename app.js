@@ -13,3 +13,13 @@ $tv.import({ define: 'site-datacontroll', file: '/src/components/pages/DataContr
 $tv.import({ define: 'site-button', file: '/src/components/additionals/Button'});
 $tv.import({ define: 'words-list', file: '/src/components/additionals/WordsList'});
 $tv.import({ define: 'site-minieditor', file: '/src/components/additionals/MiniEditor'});
+
+
+// Service Worker for PWA cache
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
+            .then(reg => console.log('✅ Service Worker has been registered!', reg.scope))
+            .catch(err => console.log('⚠️ Service Worker: Something was going wrong...', err));
+    });
+}
