@@ -1,5 +1,5 @@
 /** TV - simple small lib for page-render by JS components 
- * Creator: PenekJD
+ * Creator: Hrynchyk Dzmitryi (PenekJD)
 */
 class TvAlpineHTMLElement extends HTMLElement {
     ALPINE_COMPONENT_KEY = null; 
@@ -17,7 +17,7 @@ class TvAlpineHTMLElement extends HTMLElement {
         if (this.DEPS_WAIT_NUM !== this.DEPS_LOADED) return;
         if (this.ALPINE_COMPONENT_KEY) {
             $tv.$bind(this.ALPINE_COMPONENT_KEY, this[this.ALPINE_COMPONENT_KEY].bind(this)); 
-            this.setAttribute('x-data', '$tv.' + this.ALPINE_COMPONENT_KEY + '()');
+            this.setAttribute('x-data', '$tv.' + this.ALPINE_COMPONENT_KEY);
         }
         if (!this.TV_HTML) return;
         this.innerHTML = this.TV_HTML;
@@ -78,6 +78,7 @@ var $tv = (function() {
         linksLoaded: 0,
         isInitialized: false,
         renderedComponentsNumber: 0,
+        fetchedTags: [],
         cacheBank: {},
         $afterMethods: [],
         $interactMethods: [],
@@ -115,7 +116,10 @@ var $tv = (function() {
             });
         },
 
-        handleScriptFetch: async function(el, idx){
+        handleScriptFetch: async function(el, idx) {
+            if (this.fetchedTags.includes(el.define)) return;
+            this.fetchedTags.push(el.define);
+
             let newScript = document.createElement('script');
         
             newScript.setAttribute('type', 'text/javascript');
