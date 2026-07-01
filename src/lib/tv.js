@@ -7,11 +7,11 @@ class TvAlpineHTMLElement extends HTMLElement {
     DEPS = [];
     DEPS_WAIT_NUM = 0;
     DEPS_LOADED = 0;
-    LEGACY_HTML = '';
+    LEGACY_HTML = null;
     TV_HTML = '';
     constructor() {
         super();
-        this.LEGACY_HTML = this.innerHTML;
+        this.LEGACY_HTML = Array.from(this.querySelectorAll('*'));
     }
     bindAlpineComponent() {
         if (this.DEPS_WAIT_NUM !== this.DEPS_LOADED) return;
@@ -64,6 +64,17 @@ class TvAlpineHTMLElement extends HTMLElement {
         });
         if (waitForResources) return;
         this.bindAlpineComponent();
+
+        const container = this.querySelector('tv-legacy-html');
+        if (!container) {
+            this.LEGACY_HTML.forEach((child, idx) => {
+                const checkIdxContainer = this.querySelector('tv-legacy-html-' + idx);
+                if (!checkIdxContainer) return;
+                checkIdxContainer.appendChild(child);
+            });
+            return;
+        };
+        this.LEGACY_HTML.forEach(child => container.appendChild(child));
     }
     disconnectedCallback() {}
 }
@@ -74,6 +85,7 @@ var $tv = (function() {
             waitForEveryone: false
         },
         imports: [],
+        lazyImports: [],
         links: {},
         linksLoaded: 0,
         isInitialized: false,
@@ -107,11 +119,22 @@ var $tv = (function() {
                 if (!self.config.renderAll) {
                     let checkComponent = document.querySelector(el.define);
                     if (!checkComponent) { return false; }
+                    const loadingType = checkComponent.getAttribute('loading');
+                    if (!this.config.waitForEveryone && (loadingType === 'lazy' || loadingType === 'defer')) {
+                        el.isLazyLoad = true;
+                        if (loadingType === 'defer') {
+                            checkComponent.style.display = "none";
+                        }
+                        el.element = checkComponent;
+                        this.lazyImports.push(el);
+                        this.registerLazyload.call(this, el);
+                        this.$after(() => {
+                            el.element.style.display = '';
+                        });
+                        return false;
+                    }
                 }
-                setTimeout(
-                    this.handleScriptFetch.bind(this, el, idx), 
-                    0
-                );
+                setTimeout(this.handleScriptFetch.bind(this, el, idx), 0);
                 return true;
             });
         },
@@ -134,6 +157,23 @@ var $tv = (function() {
             newScript.onload = () => {
                 this.renderComponent(el.file);
             }
+        },
+
+        registerLazyload: async function(el) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    el.element.removeAttribute('loading');
+                    this.imports.push({ define: el.define, file: el.file });
+                    this.initTv();
+                    observer.unobserve(entry.target);
+                });
+            }, {
+                root: null,
+                rootMargin: '100px',
+                threshold: 0.1
+            });
+            observer.observe(el.element);
         },
 
         extendClass: function(classObject) {
@@ -236,7 +276,9 @@ var $tv = (function() {
             if (this.config.cache) {
                 this.createStorageCache();
             }
-            this.$afterMethods.forEach((callback) => callback());
+            this.$afterMethods = this.$afterMethods.filter(callback => {
+                callback(); return false;
+            });
             this.handleInteraction();
         },
 
@@ -284,6 +326,13 @@ var $tv = (function() {
                 return;
             }
             this.$interactMethods.push(callback);
+        },
+
+        $deferImport: async function(elDefine) {
+            const findImport = this.lazyImports.find(el => elDefine === el.define);
+            if (!findImport) return;
+            this.import(findImport);
+            this.initTv();
         }
     }
 })();
