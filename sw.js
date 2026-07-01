@@ -1,4 +1,4 @@
-const PWA_CACHE_VERSION = '2.1.8';
+const PWA_CACHE_VERSION = '2.1.9';
 const PWA_CACHE_PREFIX = 'jd-pwa-languager-cache';
 const PWA_CACHE_NAME = `${PWA_CACHE_PREFIX}-${PWA_CACHE_VERSION}`;
 const PWA_URLS_TO_CACHE = [
