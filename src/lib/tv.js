@@ -1,17 +1,53 @@
 /** TV - simple small lib for page-render by JS components 
- * Creator: Hrynchyk Dzmitryi (PenekJD)
+ * Creator: Hrynchyk Dzmitryi
 */
-class TvAlpineHTMLElement extends HTMLElement {
-    ALPINE_COMPONENT_KEY = null; 
+class TvHTMLElement extends HTMLElement {
+    LEGACY_HTML = null;
+    TV_HTML = '';
     ELEMENT_ATTRIBUTES = [];
+    constructor() {
+        super();
+    }
+    bindHtml() {
+        this.LEGACY_HTML = this.innerHTML ? Array.from(this.querySelectorAll('*')) : [];
+        if (!this.TV_HTML) return;
+        this.innerHTML = this.TV_HTML;
+        const container = this.LEGACY_HTML.length ? this.querySelector('tv-legacy-html') : null;
+        if (!container) {
+            this.LEGACY_HTML.forEach((child, idx) => {
+                const checkIdxContainer = this.querySelector('tv-legacy-html-' + idx);
+                if (!checkIdxContainer) return;
+                checkIdxContainer.replaceWith(child);
+            });
+            return;
+        };
+        container.replaceWith(...this.LEGACY_HTML);
+    }
+    connectedCallback() {
+        this.bindHtml();
+        if ($tv.missedImports.length) {
+            $tv.missedImports = $tv.missedImports.filter(el => {
+                const element = this.querySelector(el.define);
+                if (!element) return true;
+                el.element = element;
+                $tv.import(el); $tv.initTv();
+                return false;
+            });
+        }
+        this.ELEMENT_ATTRIBUTES.forEach(attrConf => {
+            for (let keyCode in attrConf) {
+                 this.setAttribute(keyCode, attrConf[keyCode]);
+            }
+        });
+    }
+}
+class TvAlpineHTMLElement extends TvHTMLElement {
+    ALPINE_COMPONENT_KEY = null; 
     DEPS = [];
     DEPS_WAIT_NUM = 0;
     DEPS_LOADED = 0;
-    LEGACY_HTML = null;
-    TV_HTML = '';
     constructor() {
         super();
-        this.LEGACY_HTML = Array.from(this.querySelectorAll('*'));
     }
     bindAlpineComponent() {
         if (this.DEPS_WAIT_NUM !== this.DEPS_LOADED) return;
@@ -19,20 +55,13 @@ class TvAlpineHTMLElement extends HTMLElement {
             $tv.$bind(this.ALPINE_COMPONENT_KEY, this[this.ALPINE_COMPONENT_KEY].bind(this)); 
             this.setAttribute('x-data', '$tv.' + this.ALPINE_COMPONENT_KEY);
         }
-        if (!this.TV_HTML) return;
-        this.innerHTML = this.TV_HTML;
     }
     connectedCallback() {
+        super.connectedCallback();
         let waitForResources = false;
         window.fetchedTvDepsScripts = window.fetchedTvDepsScripts
             ? window.fetchedTvDepsScripts
             : {};
-
-        this.ELEMENT_ATTRIBUTES.forEach(attrConf => {
-            for (let keyCode in attrConf) {
-                 this.setAttribute(keyCode, attrConf[keyCode]);
-            }
-        });
 
         this.DEPS.forEach(attrConf => {
             for (let keyCode in attrConf) {
@@ -64,19 +93,7 @@ class TvAlpineHTMLElement extends HTMLElement {
         });
         if (waitForResources) return;
         this.bindAlpineComponent();
-
-        const container = this.querySelector('tv-legacy-html');
-        if (!container) {
-            this.LEGACY_HTML.forEach((child, idx) => {
-                const checkIdxContainer = this.querySelector('tv-legacy-html-' + idx);
-                if (!checkIdxContainer) return;
-                checkIdxContainer.appendChild(child);
-            });
-            return;
-        };
-        this.LEGACY_HTML.forEach(child => container.appendChild(child));
     }
-    disconnectedCallback() {}
 }
 var $tv = (function() {
     return {
@@ -86,6 +103,7 @@ var $tv = (function() {
         },
         imports: [],
         lazyImports: [],
+        missedImports: [],
         links: {},
         linksLoaded: 0,
         isInitialized: false,
@@ -117,8 +135,10 @@ var $tv = (function() {
             let self = this;
             $tv.imports = $tv.imports.filter((el, idx) => {
                 if (!self.config.renderAll) {
-                    let checkComponent = document.querySelector(el.define);
-                    if (!checkComponent) { return false; }
+                    let checkComponent = el.element ? el.element : document.querySelector(el.define);
+                    if (!checkComponent) { 
+                        this.missedImports.push(el); return false; 
+                    }
                     const loadingType = checkComponent.getAttribute('loading');
                     if (!this.config.waitForEveryone && (loadingType === 'lazy' || loadingType === 'defer')) {
                         el.isLazyLoad = true;
