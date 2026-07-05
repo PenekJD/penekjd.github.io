@@ -25,15 +25,6 @@ class TvHTMLElement extends HTMLElement {
     }
     connectedCallback() {
         this.bindHtml();
-        if ($tv.missedImports.length) {
-            $tv.missedImports = $tv.missedImports.filter(el => {
-                const element = this.querySelector(el.define);
-                if (!element) return true;
-                el.element = element;
-                $tv.import(el); $tv.initTv();
-                return false;
-            });
-        }
         this.ELEMENT_ATTRIBUTES.forEach(attrConf => {
             for (let keyCode in attrConf) {
                  this.setAttribute(keyCode, attrConf[keyCode]);
@@ -62,7 +53,6 @@ class TvAlpineHTMLElement extends TvHTMLElement {
         window.fetchedTvDepsScripts = window.fetchedTvDepsScripts
             ? window.fetchedTvDepsScripts
             : {};
-
         this.DEPS.forEach(attrConf => {
             for (let keyCode in attrConf) {
                 let element = null;
@@ -112,7 +102,7 @@ var $tv = (function() {
         cacheBank: {},
         $afterMethods: [],
         $interactMethods: [],
-
+        _domObserver: null,
         setComponent: async function(comp){
             this.links = {...this.links, [comp.name]: comp};
             this.linksLoaded++;
@@ -126,39 +116,67 @@ var $tv = (function() {
                 this.afterRender();
             }
         },
-
         import: async function(arg){
             this.imports.push(arg);
         },
-
-        initTv: async function(){
-            let self = this;
-            $tv.imports = $tv.imports.filter((el, idx) => {
-                if (!self.config.renderAll) {
-                    let checkComponent = el.element ? el.element : document.querySelector(el.define);
-                    if (!checkComponent) { 
-                        this.missedImports.push(el); return false; 
-                    }
-                    const loadingType = checkComponent.getAttribute('loading');
-                    if (!this.config.waitForEveryone && (loadingType === 'lazy' || loadingType === 'defer')) {
-                        el.isLazyLoad = true;
-                        if (loadingType === 'defer') {
-                            checkComponent.style.display = "none";
-                        }
-                        el.element = checkComponent;
-                        this.lazyImports.push(el);
-                        this.registerLazyload.call(this, el);
-                        this.$after(() => {
-                            el.element.style.display = '';
+        startObserver: function() {
+            if (this._domObserver) return;
+            this._domObserver = new MutationObserver((mutationsList) => {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                this._checkAndHandleNode(node);
+                            }
                         });
-                        return false;
+                    }
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'loading') {
+                        this._handleAttributeChange(mutation.target);
                     }
                 }
-                setTimeout(this.handleScriptFetch.bind(this, el, idx), 0);
-                return true;
+            });
+            this._domObserver.observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['loading']
             });
         },
-
+        _checkAndHandleNode: function(node) {
+            const registeredTags = this.imports.map(el => el.define).join(', ');
+            if (!registeredTags) return;
+            if (node.matches && node.matches(registeredTags)) {
+                this._initSingleComponent(node);
+            }
+            if (node.querySelectorAll) {
+                const foundNested = node.querySelectorAll(registeredTags);
+                foundNested.forEach(child => this._initSingleComponent(child));
+            }
+        },
+        _initSingleComponent: function(element) {
+            const tag = element.localName;
+            const config = this.imports.find(el => el.define === tag);
+            if (!config) return;
+            const loadingType = element.getAttribute('loading');
+            if (loadingType === 'lazy' || loadingType === 'defer') {
+                config.element = element;
+                this.registerLazyload(config);
+                return;
+            }
+            this.handleScriptFetch(config);
+        },
+        _handleAttributeChange: function(element) {
+            if (element.hasAttribute('loading')) return;
+            this._initSingleComponent(element);
+            
+        },
+        initTv: async function() {
+            const registeredTags = this.imports.map(el => el.define).join(', ');
+            if (registeredTags) {
+                document.querySelectorAll(registeredTags).forEach(el => this._initSingleComponent(el));
+            }
+            this.startObserver();
+        },
         handleScriptFetch: async function(el, idx) {
             if (this.fetchedTags.includes(el.define)) return;
             this.fetchedTags.push(el.define);
@@ -178,7 +196,6 @@ var $tv = (function() {
                 this.renderComponent(el.file);
             }
         },
-
         registerLazyload: async function(el) {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -195,11 +212,8 @@ var $tv = (function() {
             });
             observer.observe(el.element);
         },
-
         extendClass: function(classObject) {
-            classObject.prototype.$rerender = function(){
-                
-            }
+            classObject.prototype.$rerender = function(){}
             classObject.prototype.$ = function(attributeCode){
                 return this.getAttribute(attributeCode) ?? '';
             }
@@ -217,7 +231,6 @@ var $tv = (function() {
                 if (!code || typeof callback !== 'function') {
                     return;
                 }
-                /* Bind methods after all tv-components render */
                 $tv.$after(() => {
                     let clickTargets = this.querySelectorAll('['+code+']');
                     let extendedCallback = () => {
@@ -231,14 +244,11 @@ var $tv = (function() {
             }
             return classObject;
         },
-
         bindComponentClass: async function(componentConfig, strName){
             const extendedClass = this.extendClass($tv.links[strName]);
             customElements.define(componentConfig.define, extendedClass);
         },
-
         renderAllComponents: async function(){
-            // Render for all components at once
             let self = this;
             $tv.imports.forEach(async (el) => {
                 let strName = el.file.split('/');
@@ -246,12 +256,13 @@ var $tv = (function() {
                 this.bindComponentClass(el, strName);
             });
         },
-
         renderComponent: async function(filePath){
-            // Async render of single component
             let self = this;
-            let componentClassSource = $tv.imports.find((el) => {
-                return el.file === filePath;
+            let componentClassSource = null;
+            $tv.imports = $tv.imports.filter((el) => {
+                if (el.file !== filePath) return true;
+                componentClassSource = el;
+                return false;
             });
             if (!componentClassSource) {
                 return;
@@ -263,20 +274,17 @@ var $tv = (function() {
             this.renderedComponentsNumber++;
             this.handlePostRender();
         },
-
         handlePostRender: async function() {
             if (this.renderedComponentsNumber !== this.imports.length) {
                 return;
             }
             this.afterRender();
         },
-
         startPending: (function(){
             window.addEventListener('load', async function(){
                 $tv.initTv();
             });
         })(),
-
         createStorageCache: async function(){
             if (localStorage.getItem('app_cache_bank')) {
                 return;
@@ -291,7 +299,6 @@ var $tv = (function() {
             let cacheToSave = JSON.stringify(this.cacheBank);
             localStorage.setItem('app_cache_bank', cacheToSave)
         },
-
         afterRender: async function(){
             if (this.config.cache) {
                 this.createStorageCache();
@@ -301,7 +308,6 @@ var $tv = (function() {
             });
             this.handleInteraction();
         },
-
         handleInteraction: async function (){
             const eventsArray = ['wheel', 'touchstart', 'scroll', 'keydown', 'mouseover'];
             const self = this;
@@ -321,33 +327,28 @@ var $tv = (function() {
                 window.addEventListener(eventType, handleInteractionBehavior)
             });
         },
-
         setConfig: function(config){
             let self = this;
             self.config = { ...self.config, ...config };
         },
-
         $bind: function(componentName, component){
             if (this[componentName] || !component) {
                 return;
             }
             this[componentName] = component;
         },
-
         $after: function(callback){
             if (typeof callback !== 'function') {
                 return;
             }
             this.$afterMethods.push(callback);
         },
-
         $interact: function(callback){
             if (typeof callback !== 'function') {
                 return;
             }
             this.$interactMethods.push(callback);
         },
-
         $deferImport: async function(elDefine) {
             const findImport = this.lazyImports.find(el => elDefine === el.define);
             if (!findImport) return;
