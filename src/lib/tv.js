@@ -53,6 +53,7 @@ class TvAlpineHTMLElement extends TvHTMLElement {
         window.fetchedTvDepsScripts = window.fetchedTvDepsScripts
             ? window.fetchedTvDepsScripts
             : {};
+
         this.DEPS.forEach(attrConf => {
             for (let keyCode in attrConf) {
                 let element = null;
@@ -87,75 +88,67 @@ class TvAlpineHTMLElement extends TvHTMLElement {
 }
 var $tv = (function() {
     return {
+        domObserver: null,
         config: {
-            renderAll: false,
             waitForEveryone: false
         },
         imports: [],
-        lazyImports: [],
-        missedImports: [],
         links: {},
         linksLoaded: 0,
         isInitialized: false,
         renderedComponentsNumber: 0,
         fetchedTags: [],
+        fetchedClasses: [],
         cacheBank: {},
         $afterMethods: [],
         $interactMethods: [],
-        _domObserver: null,
-        setComponent: async function(comp){
-            this.links = {...this.links, [comp.name]: comp};
-            this.linksLoaded++;
-            if ( this.linksLoaded === this.imports.length ) {
-                this.isInitialized = true;
-                
-                if (!this.config.waitForEveryone) {
-                    return;
-                }
-                this.renderAllComponents();
-                this.afterRender();
+
+        startPending: (function(){
+            window.addEventListener('load', async function(){
+                $tv.initTv();
+            });
+        })(),
+        initTv: async function() {
+            const registeredTags = this.imports.map(el => el.define).join(', ');
+            if (registeredTags) {
+                document.querySelectorAll(registeredTags).forEach(element => this.initSingleComponent(element));
             }
-        },
-        import: async function(arg){
-            this.imports.push(arg);
+            this.startObserver();
         },
         startObserver: function() {
-            if (this._domObserver) return;
-            this._domObserver = new MutationObserver((mutationsList) => {
+            if (this.domObserver) return;
+            this.domObserver = new MutationObserver((mutationsList) => {
                 for (let mutation of mutationsList) {
                     if (mutation.type === 'childList' && mutation.addedNodes.length) {
                         mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === Node.ELEMENT_NODE) {
-                                this._checkAndHandleNode(node);
-                            }
+                            if (node.nodeType !== Node.ELEMENT_NODE) return;
+                            this.checkAndHandleNode(node);
                         });
-                    }
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'loading') {
-                        this._handleAttributeChange(mutation.target);
                     }
                 }
             });
-            this._domObserver.observe(document.body, {
+            this.domObserver.observe(document.body, {
                 childList: true,
                 subtree: true,
                 attributes: true,
                 attributeFilter: ['loading']
             });
         },
-        _checkAndHandleNode: function(node) {
+        checkAndHandleNode: function(node) {
             const registeredTags = this.imports.map(el => el.define).join(', ');
             if (!registeredTags) return;
             if (node.matches && node.matches(registeredTags)) {
-                this._initSingleComponent(node);
+                this.initSingleComponent(node);
             }
             if (node.querySelectorAll) {
                 const foundNested = node.querySelectorAll(registeredTags);
-                foundNested.forEach(child => this._initSingleComponent(child));
+                foundNested.forEach(child => this.initSingleComponent(child));
             }
         },
-        _initSingleComponent: function(element) {
+        initSingleComponent: function(element) {
             const tag = element.localName;
-            const config = this.imports.find(el => el.define === tag);
+            if (this.fetchedTags.includes(tag)) return;
+            let config = this.imports.find(el => el.define === tag);
             if (!config) return;
             const loadingType = element.getAttribute('loading');
             if (loadingType === 'lazy' || loadingType === 'defer') {
@@ -164,18 +157,6 @@ var $tv = (function() {
                 return;
             }
             this.handleScriptFetch(config);
-        },
-        _handleAttributeChange: function(element) {
-            if (element.hasAttribute('loading')) return;
-            this._initSingleComponent(element);
-            
-        },
-        initTv: async function() {
-            const registeredTags = this.imports.map(el => el.define).join(', ');
-            if (registeredTags) {
-                document.querySelectorAll(registeredTags).forEach(el => this._initSingleComponent(el));
-            }
-            this.startObserver();
         },
         handleScriptFetch: async function(el, idx) {
             if (this.fetchedTags.includes(el.define)) return;
@@ -189,9 +170,7 @@ var $tv = (function() {
     
             document.head.appendChild(newScript);
 
-            if (this.config.waitForEveryone) {
-                return;
-            }
+            if (this.config.waitForEveryone) return;
             newScript.onload = () => {
                 this.renderComponent(el.file);
             }
@@ -212,6 +191,21 @@ var $tv = (function() {
             });
             observer.observe(el.element);
         },
+        setComponent: async function(comp){
+            this.links = {...this.links, [comp.name]: comp};
+            this.linksLoaded++;
+            if ( this.linksLoaded === this.fetchedTags.length ) {
+                this.isInitialized = true;
+                if (!this.config.waitForEveryone) {
+                    return;
+                }
+                this.renderAllComponents();
+                this.afterRender();
+            }
+        },
+        import: async function(arg){
+            this.imports.push(arg);
+        },
         extendClass: function(classObject) {
             classObject.prototype.$rerender = function(){}
             classObject.prototype.$ = function(attributeCode){
@@ -231,6 +225,7 @@ var $tv = (function() {
                 if (!code || typeof callback !== 'function') {
                     return;
                 }
+                /* Bind methods after all tv-components render */
                 $tv.$after(() => {
                     let clickTargets = this.querySelectorAll('['+code+']');
                     let extendedCallback = () => {
@@ -244,11 +239,17 @@ var $tv = (function() {
             }
             return classObject;
         },
-        bindComponentClass: async function(componentConfig, strName){
+        bindComponentClass: async function(componentConfig, strName) {
+            if (
+                !this.fetchedTags.includes(componentConfig.define)
+                || this.fetchedClasses.includes(componentConfig.define)
+            ) return;
+            this.fetchedClasses.push(componentConfig.define);
             const extendedClass = this.extendClass($tv.links[strName]);
             customElements.define(componentConfig.define, extendedClass);
         },
-        renderAllComponents: async function(){
+        renderAllComponents: async function() {
+            // Render for all components at once
             let self = this;
             $tv.imports.forEach(async (el) => {
                 let strName = el.file.split('/');
@@ -257,6 +258,7 @@ var $tv = (function() {
             });
         },
         renderComponent: async function(filePath){
+            // Async render of single component
             let self = this;
             let componentClassSource = null;
             $tv.imports = $tv.imports.filter((el) => {
@@ -275,16 +277,11 @@ var $tv = (function() {
             this.handlePostRender();
         },
         handlePostRender: async function() {
-            if (this.renderedComponentsNumber !== this.imports.length) {
+            if (this.renderedComponentsNumber !== this.fetchedTags.length) {
                 return;
             }
             this.afterRender();
         },
-        startPending: (function(){
-            window.addEventListener('load', async function(){
-                $tv.initTv();
-            });
-        })(),
         createStorageCache: async function(){
             if (localStorage.getItem('app_cache_bank')) {
                 return;
@@ -311,18 +308,15 @@ var $tv = (function() {
         handleInteraction: async function (){
             const eventsArray = ['wheel', 'touchstart', 'scroll', 'keydown', 'mouseover'];
             const self = this;
-
             function removeInteractionEvents() {
                 eventsArray.forEach((eventType) => {
                     window.removeEventListener(eventType, handleInteractionBehavior);
                 });
             }
-
             function handleInteractionBehavior() {
                 removeInteractionEvents();
                 self.$interactMethods.forEach(callback => callback());
             }
-
             eventsArray.forEach((eventType) => {
                 window.addEventListener(eventType, handleInteractionBehavior)
             });
@@ -348,12 +342,6 @@ var $tv = (function() {
                 return;
             }
             this.$interactMethods.push(callback);
-        },
-        $deferImport: async function(elDefine) {
-            const findImport = this.lazyImports.find(el => elDefine === el.define);
-            if (!findImport) return;
-            this.import(findImport);
-            this.initTv();
         }
     }
 })();
