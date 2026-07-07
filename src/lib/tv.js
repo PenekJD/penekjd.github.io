@@ -1,21 +1,20 @@
-/** TV - simple small lib for page-render by JS components 
+/** TV | v 2.0.2 - simple small lib for page-render by JS components 
  * Creator: Hrynchyk Dzmitryi
 */
 class TvHTMLElement extends HTMLElement {
     LEGACY_HTML = null;
     TV_HTML = '';
     ELEMENT_ATTRIBUTES = [];
-    constructor() {
-        super();
-    }
-    bindHtml() {
-        this.LEGACY_HTML = this.innerHTML ? Array.from(this.querySelectorAll('*')) : [];
+    _bindHtml() {
+        this.LEGACY_HTML = this.innerHTML ? Array.from(this.children) : [];
         if (!this.TV_HTML) return;
-        this.innerHTML = this.TV_HTML;
-        const container = this.LEGACY_HTML.length ? this.querySelector('tv-legacy-html') : null;
+        this.innerHTML = typeof this.TV_HTML === 'function' 
+            ? this.TV_HTML(this.$)
+            : this.TV_HTML;
+        const container = this.LEGACY_HTML.length ? this.querySelector('tv-childs') : null;
         if (!container) {
             this.LEGACY_HTML.forEach((child, idx) => {
-                const checkIdxContainer = this.querySelector('tv-legacy-html-' + idx);
+                const checkIdxContainer = this.querySelector('tv-child-' + idx);
                 if (!checkIdxContainer) return;
                 checkIdxContainer.replaceWith(child);
             });
@@ -24,7 +23,9 @@ class TvHTMLElement extends HTMLElement {
         container.replaceWith(...this.LEGACY_HTML);
     }
     connectedCallback() {
-        this.bindHtml();
+        console.log(this.tagName ,'Bindend')
+        this._bindHtml();
+        this.setAttribute('tv-binded', 1);
         this.ELEMENT_ATTRIBUTES.forEach(attrConf => {
             for (let keyCode in attrConf) {
                  this.setAttribute(keyCode, attrConf[keyCode]);
@@ -37,13 +38,10 @@ class TvAlpineHTMLElement extends TvHTMLElement {
     DEPS = [];
     DEPS_WAIT_NUM = 0;
     DEPS_LOADED = 0;
-    constructor() {
-        super();
-    }
     bindAlpineComponent() {
         if (this.DEPS_WAIT_NUM !== this.DEPS_LOADED) return;
         if (this.ALPINE_COMPONENT_KEY) {
-            $tv.$bind(this.ALPINE_COMPONENT_KEY, this[this.ALPINE_COMPONENT_KEY].bind(this)); 
+            $tv.$bind(this.ALPINE_COMPONENT_KEY, this[this.ALPINE_COMPONENT_KEY].bind(this, this.$attr)); 
             this.setAttribute('x-data', '$tv.' + this.ALPINE_COMPONENT_KEY);
         }
     }
@@ -51,9 +49,7 @@ class TvAlpineHTMLElement extends TvHTMLElement {
         super.connectedCallback();
         let waitForResources = false;
         window.fetchedTvDepsScripts = window.fetchedTvDepsScripts
-            ? window.fetchedTvDepsScripts
-            : {};
-
+            ? window.fetchedTvDepsScripts : {};
         this.DEPS.forEach(attrConf => {
             for (let keyCode in attrConf) {
                 let element = null;
@@ -89,10 +85,13 @@ class TvAlpineHTMLElement extends TvHTMLElement {
 var $tv = (function() {
     return {
         domObserver: null,
+        debounceTimeout: null,
         config: {
             waitForEveryone: false
         },
         imports: [],
+        lazyImports: [],
+        deferImports: [],
         links: {},
         linksLoaded: 0,
         isInitialized: false,
@@ -108,11 +107,12 @@ var $tv = (function() {
                 $tv.initTv();
             });
         })(),
-        initTv: async function() {
+        initTv: async function(node = document) {
             const registeredTags = this.imports.map(el => el.define).join(', ');
             if (registeredTags) {
-                document.querySelectorAll(registeredTags).forEach(element => this.initSingleComponent(element));
+                node.querySelectorAll(registeredTags).forEach(element => this.initSingleComponent(element));
             }
+            if (this.domObserver) return;
             this.startObserver();
         },
         startObserver: function() {
@@ -122,8 +122,11 @@ var $tv = (function() {
                     if (mutation.type === 'childList' && mutation.addedNodes.length) {
                         mutation.addedNodes.forEach(node => {
                             if (node.nodeType !== Node.ELEMENT_NODE) return;
-                            this.checkAndHandleNode(node);
+                            this.checkAndHandleNodeMutation(node);
                         });
+                    }
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'loading') {
+                        this.handleAttributeChange(mutation.target);
                     }
                 }
             });
@@ -134,18 +137,26 @@ var $tv = (function() {
                 attributeFilter: ['loading']
             });
         },
-        checkAndHandleNode: function(node) {
+        handleAttributeChange: function(element) {
+            this.initSingleComponent(element);
+        },
+        checkAndHandleNodeMutation: function(node) {
             const registeredTags = this.imports.map(el => el.define).join(', ');
             if (!registeredTags) return;
+            let isTvComponent = false;
             if (node.matches && node.matches(registeredTags)) {
+                isTvComponent = true;
                 this.initSingleComponent(node);
             }
-            if (node.querySelectorAll) {
-                const foundNested = node.querySelectorAll(registeredTags);
-                foundNested.forEach(child => this.initSingleComponent(child));
+            if (!isTvComponent && node.querySelectorAll) {
+                clearTimeout(this.debounceTimeout);
+                this.debounceTimeout = setTimeout(() => {
+                    const foundNested = node.querySelectorAll(registeredTags);
+                    foundNested.forEach(child => this.initSingleComponent(child, true));
+                }, 0);
             }
         },
-        initSingleComponent: function(element) {
+        initSingleComponent: function(element, isMutation) {
             const tag = element.localName;
             if (this.fetchedTags.includes(tag)) return;
             let config = this.imports.find(el => el.define === tag);
@@ -153,10 +164,32 @@ var $tv = (function() {
             const loadingType = element.getAttribute('loading');
             if (loadingType === 'lazy' || loadingType === 'defer') {
                 config.element = element;
-                this.registerLazyload(config);
+                config.loading = loadingType;
+                this.registerLazyload(config, isMutation);
                 return;
             }
             this.handleScriptFetch(config);
+        },
+        registerLazyload: async function(el, isMutation) {
+            if (this.lazyImports.includes(el.element)) return;
+            this.lazyImports.push(el.element);
+            el.element.style.display = "none";
+            if (el.loading === 'defer') this.deferImports.push(el);
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (el.loading === 'lazy') el.element.style.display = '';
+                    if (!entry.isIntersecting) return;
+                    el.element.removeAttribute('loading');
+                    observer.unobserve(entry.target);
+                });
+            }, {
+                root: null,
+                rootMargin: '100px',
+                threshold: 0.1
+            });
+            observer.observe(el.element);
+            if (!isMutation) return;
+            this.afterRender();
         },
         handleScriptFetch: async function(el, idx) {
             if (this.fetchedTags.includes(el.define)) return;
@@ -175,22 +208,6 @@ var $tv = (function() {
                 this.renderComponent(el.file);
             }
         },
-        registerLazyload: async function(el) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (!entry.isIntersecting) return;
-                    el.element.removeAttribute('loading');
-                    this.imports.push({ define: el.define, file: el.file });
-                    this.initTv();
-                    observer.unobserve(entry.target);
-                });
-            }, {
-                root: null,
-                rootMargin: '100px',
-                threshold: 0.1
-            });
-            observer.observe(el.element);
-        },
         setComponent: async function(comp){
             this.links = {...this.links, [comp.name]: comp};
             this.linksLoaded++;
@@ -207,36 +224,20 @@ var $tv = (function() {
             this.imports.push(arg);
         },
         extendClass: function(classObject) {
-            classObject.prototype.$rerender = function(){}
-            classObject.prototype.$ = function(attributeCode){
-                return this.getAttribute(attributeCode) ?? '';
+            classObject.prototype.$attr = (context, attributeCode) => {
+                return context.getAttribute(attributeCode) ?? '';
             }
-            classObject.prototype.$setVar = function(code, value){
-                this.$vars = this.$vars ? this.$vars : {};
-                if (this.$vars[code]) {
-                    return;
-                }
-                this.$vars[code] = value;
-            }
-            classObject.prototype.$var = function(code){
-                return this.$vars[code];
-            }
-            classObject.prototype.$click = function(code, callback){
-                if (!code || typeof callback !== 'function') {
-                    return;
-                }
-                /* Bind methods after all tv-components render */
-                $tv.$after(() => {
-                    let clickTargets = this.querySelectorAll('['+code+']');
-                    let extendedCallback = () => {
-                        callback.call(this);
-                        this.$rerender();
+            Object.defineProperty(classObject.prototype, '$', {
+                get: function() {
+                    const attrs = {};
+                    for (let i = 0; i < this.attributes.length; i++) {
+                        const attr = this.attributes[i];
+                        attrs[attr.name] = attr.value;
                     }
-                    clickTargets.forEach(
-                        clickTarget => clickTarget.addEventListener('click', extendedCallback)
-                    );
-                });
-            }
+                    return attrs;
+                },
+                configurable: true
+            });
             return classObject;
         },
         bindComponentClass: async function(componentConfig, strName) {
@@ -269,7 +270,6 @@ var $tv = (function() {
             if (!componentClassSource) {
                 return;
             }
-
             let strName = componentClassSource.file.split('/');
                 strName = strName[strName.length-1];
             this.bindComponentClass(componentClassSource, strName);
@@ -280,30 +280,15 @@ var $tv = (function() {
             if (this.renderedComponentsNumber !== this.fetchedTags.length) {
                 return;
             }
+            this.lazyImports.forEach(element => element.style.display = '');
             this.afterRender();
         },
-        createStorageCache: async function(){
-            if (localStorage.getItem('app_cache_bank')) {
-                return;
-            }
-            this.imports.forEach((el) => {
-                const elementTag = el.define;
-                let elementsHtml = document.querySelectorAll(elementTag);
-                this.cacheBank[elementTag] = [...elementsHtml].reduce((acc, el) => {
-                    return [...acc, el.innerHTML];
-                }, []);
-            });
-            let cacheToSave = JSON.stringify(this.cacheBank);
-            localStorage.setItem('app_cache_bank', cacheToSave)
-        },
         afterRender: async function(){
-            if (this.config.cache) {
-                this.createStorageCache();
-            }
             this.$afterMethods = this.$afterMethods.filter(callback => {
                 callback(); return false;
             });
             this.handleInteraction();
+            this.deferImports.forEach(el => el.element.style.display = '');
         },
         handleInteraction: async function (){
             const eventsArray = ['wheel', 'touchstart', 'scroll', 'keydown', 'mouseover'];
