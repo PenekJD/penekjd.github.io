@@ -1,4 +1,4 @@
-/** TV | v 2.0.2 - simple small lib for page-render by JS components 
+/** TV.js | v 3.0.0 - simple small lib for page-render by JS components 
  * Creator: Hrynchyk Dzmitryi
 */
 class TvHTMLElement extends HTMLElement {
@@ -23,6 +23,7 @@ class TvHTMLElement extends HTMLElement {
         container.replaceWith(...this.LEGACY_HTML);
     }
     connectedCallback() {
+        if (this.getAttribute('loading')) return;
         console.log(this.tagName ,'Bindend')
         this._bindHtml();
         this.setAttribute('tv-binded', 1);
@@ -47,6 +48,7 @@ class TvAlpineHTMLElement extends TvHTMLElement {
     }
     connectedCallback() {
         super.connectedCallback();
+        if (this.getAttribute('loading')) return;
         let waitForResources = false;
         window.fetchedTvDepsScripts = window.fetchedTvDepsScripts
             ? window.fetchedTvDepsScripts : {};
@@ -82,146 +84,54 @@ class TvAlpineHTMLElement extends TvHTMLElement {
         this.bindAlpineComponent();
     }
 }
-var $tv = (function() {
+$tv = (function() {
     return {
         domObserver: null,
-        debounceTimeout: null,
         config: {
             waitForEveryone: false
         },
-        imports: [],
-        lazyImports: [],
+        registeredTags: '',
+        registeredTagsStrict: {},
+        tagRegex: null,
+        imports: {},
+        lazyImports: {},
         deferImports: [],
-        links: {},
         linksLoaded: 0,
-        isInitialized: false,
         renderedComponentsNumber: 0,
-        fetchedTags: [],
-        fetchedClasses: [],
-        cacheBank: {},
+        fetchedScripts: {},
         $afterMethods: [],
         $interactMethods: [],
 
-        startPending: (function(){
-            window.addEventListener('load', async function(){
+        startPending: (() => {
+            window.addEventListener('load', () => {
                 $tv.initTv();
             });
         })(),
-        initTv: async function(node = document) {
-            const registeredTags = this.imports.map(el => el.define).join(', ');
-            if (registeredTags) {
-                node.querySelectorAll(registeredTags).forEach(element => this.initSingleComponent(element));
-            }
-            if (this.domObserver) return;
-            this.startObserver();
-        },
-        startObserver: function() {
-            if (this.domObserver) return;
-            this.domObserver = new MutationObserver((mutationsList) => {
-                for (let mutation of mutationsList) {
-                    if (mutation.type === 'childList' && mutation.addedNodes.length) {
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType !== Node.ELEMENT_NODE) return;
-                            this.checkAndHandleNodeMutation(node);
-                        });
-                    }
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'loading') {
-                        this.handleAttributeChange(mutation.target);
-                    }
-                }
-            });
-            this.domObserver.observe(document.body, {
-                childList: true,
-                subtree: true,
-                attributes: true,
-                attributeFilter: ['loading']
-            });
-        },
-        handleAttributeChange: function(element) {
-            this.initSingleComponent(element);
-        },
-        checkAndHandleNodeMutation: function(node) {
-            const registeredTags = this.imports.map(el => el.define).join(', ');
-            if (!registeredTags) return;
-            let isTvComponent = false;
-            if (node.matches && node.matches(registeredTags)) {
-                isTvComponent = true;
-                this.initSingleComponent(node);
-            }
-            if (!isTvComponent && node.querySelectorAll) {
-                clearTimeout(this.debounceTimeout);
-                this.debounceTimeout = setTimeout(() => {
-                    const foundNested = node.querySelectorAll(registeredTags);
-                    foundNested.forEach(child => this.initSingleComponent(child, true));
-                }, 0);
-            }
-        },
-        initSingleComponent: function(element, isMutation) {
-            const tag = element.localName;
-            if (this.fetchedTags.includes(tag)) return;
-            let config = this.imports.find(el => el.define === tag);
-            if (!config) return;
-            const loadingType = element.getAttribute('loading');
-            if (loadingType === 'lazy' || loadingType === 'defer') {
-                config.element = element;
-                config.loading = loadingType;
-                this.registerLazyload(config, isMutation);
-                return;
-            }
-            this.handleScriptFetch(config);
-        },
-        registerLazyload: async function(el, isMutation) {
-            if (this.lazyImports.includes(el.element)) return;
-            this.lazyImports.push(el.element);
-            el.element.style.display = "none";
-            if (el.loading === 'defer') this.deferImports.push(el);
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (el.loading === 'lazy') el.element.style.display = '';
-                    if (!entry.isIntersecting) return;
-                    el.element.removeAttribute('loading');
-                    observer.unobserve(entry.target);
-                });
-            }, {
-                root: null,
-                rootMargin: '100px',
-                threshold: 0.1
-            });
-            observer.observe(el.element);
-            if (!isMutation) return;
-            this.afterRender();
-        },
-        handleScriptFetch: async function(el, idx) {
-            if (this.fetchedTags.includes(el.define)) return;
-            this.fetchedTags.push(el.define);
-
-            let newScript = document.createElement('script');
-        
-            newScript.setAttribute('type', 'text/javascript');
-            newScript.src = el.file+'.js';
-            el.idx = idx;
-    
-            document.head.appendChild(newScript);
-
-            if (this.config.waitForEveryone) return;
-            newScript.onload = () => {
-                this.renderComponent(el.file);
-            }
-        },
-        setComponent: async function(comp){
-            this.links = {...this.links, [comp.name]: comp};
+        setComponent: function(comp){
+            this.links = { ...this.links, [comp.name]: comp};
             this.linksLoaded++;
-            if ( this.linksLoaded === this.fetchedTags.length ) {
-                this.isInitialized = true;
-                if (!this.config.waitForEveryone) {
-                    return;
-                }
-                this.renderAllComponents();
+            if (!this.config.waitForEveryone) return;
+            if (this.linksLoaded === Object.keys(this.fetchedScripts).length) {
+                this.renderAllVisibleAtOnce();
                 this.afterRender();
+                this.config.waitForEveryone = false;
             }
         },
-        import: async function(arg){
-            this.imports.push(arg);
+        getClassObjectNameByFileName: function(el) {
+            let strName = el.file.split('/');
+            return strName[strName.length-1];
+        },
+        renderAllVisibleAtOnce: function() {
+            for (elTag in this.fetchedScripts) {
+                const el = this.imports[elTag];
+                console.log(this.getClassObjectNameByFileName(el));
+                this.renderComponent(el);
+                delete this.fetchedScripts[elTag];
+            }
+        },
+        import: function(elConfig) {
+            elConfig.define = elConfig.define.toLowerCase();
+            this.imports[elConfig.define] = elConfig;
         },
         extendClass: function(classObject) {
             classObject.prototype.$attr = (context, attributeCode) => {
@@ -229,7 +139,7 @@ var $tv = (function() {
             }
             Object.defineProperty(classObject.prototype, '$', {
                 get: function() {
-                    const attrs = {};
+                    let attrs = {};
                     for (let i = 0; i < this.attributes.length; i++) {
                         const attr = this.attributes[i];
                         attrs[attr.name] = attr.value;
@@ -240,75 +150,161 @@ var $tv = (function() {
             });
             return classObject;
         },
-        bindComponentClass: async function(componentConfig, strName) {
-            if (
-                !this.fetchedTags.includes(componentConfig.define)
-                || this.fetchedClasses.includes(componentConfig.define)
-            ) return;
-            this.fetchedClasses.push(componentConfig.define);
-            const extendedClass = this.extendClass($tv.links[strName]);
-            customElements.define(componentConfig.define, extendedClass);
+        handleIntersectionObserving: function(element, callbackBetween) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    callbackBetween(entry);
+                    observer.unobserve(entry.target);
+                });
+            }, { root: null, rootMargin: '100px', threshold: 0.1});
+            observer.observe(element);
         },
-        renderAllComponents: async function() {
-            // Render for all components at once
-            let self = this;
-            $tv.imports.forEach(async (el) => {
-                let strName = el.file.split('/');
-                strName = strName[strName.length-1];
-                this.bindComponentClass(el, strName);
+        registerLazyload: function(element) {
+            this.handleIntersectionObserving(element, (entry) => {
+                const tagName = entry.target.tagName.toLowerCase();
+                this.handleScriptFetch(this.imports[tagName]);
+                entry.target.removeAttribute('loading');
+                if (entry.target.connectedCallback) {
+                    entry.target.connectedCallback();
+                }
             });
         },
-        renderComponent: async function(filePath){
-            // Async render of single component
-            let self = this;
-            let componentClassSource = null;
-            $tv.imports = $tv.imports.filter((el) => {
-                if (el.file !== filePath) return true;
-                componentClassSource = el;
-                return false;
-            });
-            if (!componentClassSource) {
+        registerDefer: function(element) {
+            this.deferImports.push(element);
+        },
+        bindComponentClass: function(el, elClassName) {
+            const extendedClass = this.extendClass($tv.links[elClassName]);
+            customElements.define(el.define, extendedClass);
+            this.removeRegisterTag(el.define);
+        },
+        renderComponent: function(el) {
+            let componentConfig = this.imports[el.define];
+            if (!componentConfig) {
                 return;
             }
-            let strName = componentClassSource.file.split('/');
-                strName = strName[strName.length-1];
-            this.bindComponentClass(componentClassSource, strName);
+            this.bindComponentClass(el, this.getClassObjectNameByFileName(componentConfig));
             this.renderedComponentsNumber++;
             this.handlePostRender();
         },
-        handlePostRender: async function() {
-            if (this.renderedComponentsNumber !== this.fetchedTags.length) {
+        handleScriptFetch: function(el) {
+            if (!el || this.fetchedScripts[el.define]) return;
+            this.fetchedScripts[el.define] = true;
+            let newScript = document.createElement('script');
+            newScript.setAttribute('type', 'text/javascript');
+            newScript.src = el.file+'.js';
+            document.head.appendChild(newScript);
+            if (this.config.waitForEveryone) return;
+            newScript.onload = () => {
+                this.renderComponent(el);
+            }
+        },
+        initSingleComponent: function(element) {
+            const el = this.imports[element.tagName.toLowerCase()];
+            if (!el) return; 
+            el.loading = element.getAttribute('loading');
+            if (el.loading === 'lazy') {
+                this.registerLazyload(element);
                 return;
             }
-            this.lazyImports.forEach(element => element.style.display = '');
+            if (el.loading === 'defer') {
+                this.registerDefer(element);
+                return;
+            }
+            el.elements = el.elements ? el.elements : [];
+            el.elements.push(element);
+            this.handleScriptFetch(el);
+        },
+        initTv: function(node = document) {
+            for (elTag in this.imports) this.addRegisterTag(elTag);
+            if (this.registeredTags) {
+                node.querySelectorAll(this.registeredTags).forEach(element => this.initSingleComponent(element));
+            }
+        },
+        handleDOMObserver: function() {
+            if (this.domObserver) return;
+            this.domObserver = new MutationObserver((mutationsList) => {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType !== Node.ELEMENT_NODE) return;
+                            const tagName = node.tagName.toLowerCase();
+                            if (this.imports[tagName]) {
+                                this.handleNodeMutation(node, tagName);
+                                return;
+                            }
+                            this.handleSubtreeMutation(node);
+                        });
+                    }
+                }
+            });
+            this.domObserver.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        },
+        handleNodeMutation: function(node, tagName) {
+            if (!this.imports[tagName]) return;
+            this.initSingleComponent(node);
+        },
+        handleSubtreeMutation: function(node) {
+            if (!this.tagRegex || !this.tagRegex.test(node.innerHTML)) return;
+            const tvChilds = node.querySelectorAll(this.registeredTags);
+            tvChilds.forEach(element => this.initSingleComponent(element));
+        },
+        addRegisterTag(strElTag) {
+            if (this.registeredTagsStrict[strElTag]) return;
+            this.registeredTags += this.registeredTags ? ', ' + strElTag : strElTag;
+            this.registeredTagsStrict[strElTag] = true;
+            this.createRegexOfRegisteredTags();
+        },
+        removeRegisterTag(strElTag) {
+            const regex = new RegExp(`, ?${strElTag}|${strElTag}, ?`, 'g');
+            this.registeredTags = this.registeredTags.replace(regex, '');
+            if (this.imports[strElTag]) delete this.imports[strElTag];
+            if (this.registeredTagsStrict[strElTag]) delete this.registeredTagsStrict[strElTag];
+            this.createRegexOfRegisteredTags();
+        },
+        createRegexOfRegisteredTags: function() {
+            const cleanTags = this.registeredTags.split(',').map(str => str.trim()).join('|');
+            this.tagRegex = new RegExp(cleanTags);
+        },
+        setConfig: function(config){
+            let self = this;
+            self.config = { ...self.config, ...config };
+        },
+        handlePostRender: function() {
+            if (this.renderedComponentsNumber !== Object.keys(this.fetchedScripts).length) return;
             this.afterRender();
         },
-        afterRender: async function(){
+        afterRender: function() {
+            this.deferImports = this.deferImports.filter(element => {
+                element.setAttribute('loading', 'lazy');
+                this.initSingleComponent(element);
+                return false;
+            });
             this.$afterMethods = this.$afterMethods.filter(callback => {
                 callback(); return false;
             });
+            if (!this.domObserver) {
+                this.handleDOMObserver();
+            };
             this.handleInteraction();
-            this.deferImports.forEach(el => el.element.style.display = '');
         },
-        handleInteraction: async function (){
+        handleInteraction: function (){
             const eventsArray = ['wheel', 'touchstart', 'scroll', 'keydown', 'mouseover'];
-            const self = this;
             function removeInteractionEvents() {
                 eventsArray.forEach((eventType) => {
                     window.removeEventListener(eventType, handleInteractionBehavior);
                 });
             }
-            function handleInteractionBehavior() {
+            const handleInteractionBehavior = () => {
                 removeInteractionEvents();
-                self.$interactMethods.forEach(callback => callback());
+                this.$interactMethods.forEach(callback => callback());
             }
             eventsArray.forEach((eventType) => {
                 window.addEventListener(eventType, handleInteractionBehavior)
             });
-        },
-        setConfig: function(config){
-            let self = this;
-            self.config = { ...self.config, ...config };
         },
         $bind: function(componentName, component){
             if (this[componentName] || !component) {
