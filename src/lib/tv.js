@@ -1,4 +1,4 @@
-/** TV.js | v 3.0.0 - simple small lib for page-render by JS components 
+/** TV.js | v 3.1.0 - simple small lib for page-render by JS components 
  * Creator: Hrynchyk Dzmitryi
 */
 class TvHTMLElement extends HTMLElement {
@@ -24,7 +24,6 @@ class TvHTMLElement extends HTMLElement {
     }
     connectedCallback() {
         if (this.getAttribute('loading')) return;
-        console.log(this.tagName ,'Bindend')
         this._bindHtml();
         this.setAttribute('tv-binded', 1);
         this.ELEMENT_ATTRIBUTES.forEach(attrConf => {
@@ -124,7 +123,6 @@ $tv = (function() {
         renderAllVisibleAtOnce: function() {
             for (elTag in this.fetchedScripts) {
                 const el = this.imports[elTag];
-                console.log(this.getClassObjectNameByFileName(el));
                 this.renderComponent(el);
                 delete this.fetchedScripts[elTag];
             }
@@ -211,8 +209,6 @@ $tv = (function() {
                 this.registerDefer(element);
                 return;
             }
-            el.elements = el.elements ? el.elements : [];
-            el.elements.push(element);
             this.handleScriptFetch(el);
         },
         initTv: function(node = document) {
@@ -224,19 +220,21 @@ $tv = (function() {
         handleDOMObserver: function() {
             if (this.domObserver) return;
             this.domObserver = new MutationObserver((mutationsList) => {
+                const elementsForNodeMutation = [];
                 for (let mutation of mutationsList) {
-                    if (mutation.type === 'childList' && mutation.addedNodes.length) {
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType !== Node.ELEMENT_NODE) return;
-                            const tagName = node.tagName.toLowerCase();
-                            if (this.imports[tagName]) {
-                                this.handleNodeMutation(node, tagName);
-                                return;
-                            }
-                            this.handleSubtreeMutation(node);
-                        });
+                    if (mutation.type !== 'childList' || !mutation.addedNodes.length) continue;
+                    for (let node of mutation.addedNodes) {
+                        for (let newNode of node.childNodes) {
+                            if (!newNode.tagName) continue;
+                            let subTagName = newNode.tagName.toLowerCase();
+                            if (!this.imports[subTagName]) continue;
+                            elementsForNodeMutation.push(newNode);
+                        }
                     }
                 }
+                elementsForNodeMutation.forEach(element => {
+                    this.handleNodeMutation(element, element.tagName.toLowerCase());
+                });
             });
             this.domObserver.observe(document.body, {
                 childList: true,
@@ -246,11 +244,6 @@ $tv = (function() {
         handleNodeMutation: function(node, tagName) {
             if (!this.imports[tagName]) return;
             this.initSingleComponent(node);
-        },
-        handleSubtreeMutation: function(node) {
-            if (!this.tagRegex || !this.tagRegex.test(node.innerHTML)) return;
-            const tvChilds = node.querySelectorAll(this.registeredTags);
-            tvChilds.forEach(element => this.initSingleComponent(element));
         },
         addRegisterTag(strElTag) {
             if (this.registeredTagsStrict[strElTag]) return;
