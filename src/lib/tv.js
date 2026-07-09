@@ -1,4 +1,4 @@
-/** TV.js | v 3.1.0 - simple small lib for page-render by JS components 
+/** TV.js | v 3.1.1 - simple small lib for page-render by JS components 
  * Creator: Hrynchyk Dzmitryi
 */
 class TvHTMLElement extends HTMLElement {
@@ -224,6 +224,12 @@ $tv = (function() {
                 for (let mutation of mutationsList) {
                     if (mutation.type !== 'childList' || !mutation.addedNodes.length) continue;
                     for (let node of mutation.addedNodes) {
+                        if (!node.tagName) continue;
+                        let tagName = node.tagName.toLowerCase();
+                        if (this.imports[tagName]) {
+                            elementsForNodeMutation.push(node);
+                            continue;
+                        };
                         for (let newNode of node.childNodes) {
                             if (!newNode.tagName) continue;
                             let subTagName = newNode.tagName.toLowerCase();
