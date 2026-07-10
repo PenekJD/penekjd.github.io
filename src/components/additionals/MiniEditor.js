@@ -1,10 +1,10 @@
-class MiniEditor extends TvAlpineHTMLElement {
+class MiniEditor extends EzAlpineHTMLElement {
 
     ALPINE_COMPONENT_KEY = 'initMiniEditorComponent';
 
     ELEMENT_ATTRIBUTES = [{ 'x-bind' : 'eventListeners' }]
 
-    TV_HTML = /*html*/`
+    EZ_HTML = /*html*/`
     <template x-if="active">
         <section class="mini-editor-block">
             <div class="mini-editor-backdrop" @click="$dispatch('dispatch-mini-editor', null)"></div>
@@ -50,4 +50,4 @@ class MiniEditor extends TvAlpineHTMLElement {
         }
     }
 }
-$tv.setComponent(MiniEditor);
+$ez.setComponent(MiniEditor);

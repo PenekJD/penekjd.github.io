@@ -1,8 +1,8 @@
-class SiteMenu extends TvAlpineHTMLElement {
+class SiteMenu extends EzAlpineHTMLElement {
 
     ALPINE_COMPONENT_KEY = 'initSiteMenu';
 
-    TV_HTML = /*html*/`
+    EZ_HTML = /*html*/`
     <section class="logo-title">
         <a href="/" class="flex-row items-center justify-center gap-1">
             <img src="/favicon.ico" width="16" height="16" loading="lazy" alt="Logo" />
@@ -10,7 +10,7 @@ class SiteMenu extends TvAlpineHTMLElement {
                 Languager
             </h2>
         </a>
-        <code>v 3.1.1</code>
+        <code>v 1.0.1</code>
     </section>
     <nav role="navigation">
         <ul>
@@ -57,4 +57,4 @@ class SiteMenu extends TvAlpineHTMLElement {
         }
     }
 }
-$tv.setComponent(SiteMenu);
+$ez.setComponent(SiteMenu);

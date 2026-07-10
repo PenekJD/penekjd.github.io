@@ -1,9 +1,9 @@
 
-class MainPage extends TvAlpineHTMLElement {
+class MainPage extends EzAlpineHTMLElement {
 
     ALPINE_COMPONENT_KEY = 'initMainPage';
 
-    TV_HTML = /*html*/`
+    EZ_HTML = /*html*/`
         <div>
             <div class="row-between w-full">
                 <span class="flex-row items-center gap-1">
@@ -141,4 +141,4 @@ class MainPage extends TvAlpineHTMLElement {
         }
     }
 }
-$tv.setComponent(MainPage);
+$ez.setComponent(MainPage);

@@ -1,4 +1,4 @@
-class DataHandler extends TvAlpineHTMLElement {
+class DataHandler extends EzAlpineHTMLElement {
 
     ALPINE_COMPONENT_KEY = 'initDataHandler';
 
@@ -47,4 +47,4 @@ class DataHandler extends TvAlpineHTMLElement {
         }
     }
 }
-$tv.setComponent(DataHandler);
+$ez.setComponent(DataHandler);

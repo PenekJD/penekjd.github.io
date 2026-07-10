@@ -1,10 +1,9 @@
-class Footer extends TvAlpineHTMLElement {
-    TV_HTML = /*html*/`
+class Footer extends EzAlpineHTMLElement {
+    EZ_HTML = /*html*/`
         <div>
             <span>PenekJD</span>
-            <div>Powered by <a href="/pages/tvjs.html">tv.js</a> + <a href="https://alpinejs.dev/" target="_blank">AlpineJS</a></div>
-            <div style="font-size:8px;">Languager v.1.4.5</div>
+            <div>Powered by <a href="https://ezlandjs.github.io/">EzLand.js</a> + <a href="https://alpinejs.dev/" target="_blank">AlpineJS</a></div>
         </div>
     `;
 }
-$tv.setComponent(Footer);
+$ez.setComponent(Footer);

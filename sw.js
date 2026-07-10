@@ -1,4 +1,4 @@
-const PWA_CACHE_VERSION = '3.1.1';
+const PWA_CACHE_VERSION = '1.0.1';
 const PWA_CACHE_PREFIX = 'jd-pwa-languager-cache';
 const PWA_CACHE_NAME = `${PWA_CACHE_PREFIX}-${PWA_CACHE_VERSION}`;
 const PWA_URLS_TO_CACHE = [
@@ -11,11 +11,10 @@ const PWA_URLS_TO_CACHE = [
     '/index.html',
     '/pages/page1.html',
     '/pages/save.html',
-    '/pages/tvjs.html',
     '/pages/about.html',
     '/src/styles/styles.css',
     '/src/fonts/Montserrat-Regular.ttf',
-    '/src/lib/tv.js',
+    '/src/lib/ezland.js',
     '/src/lib/alpine.js',
     '/app.js',
     '/src/components/additionals/DataHandler.js',

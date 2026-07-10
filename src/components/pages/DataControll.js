@@ -1,8 +1,8 @@
-class DataControll extends TvAlpineHTMLElement {
+class DataControll extends EzAlpineHTMLElement {
 
     ALPINE_COMPONENT_KEY = 'initDataControll';
 
-    TV_HTML = /*html*/`
+    EZ_HTML = /*html*/`
         <div>
             <span class="flex-row items-center gap-1">
                 <img class="icon" width="24" height="24" src="/data/svg/DataTransfer.svg" alt="Progress">
@@ -140,4 +140,4 @@ class DataControll extends TvAlpineHTMLElement {
         }
     }
 }
-$tv.setComponent(DataControll);
+$ez.setComponent(DataControll);

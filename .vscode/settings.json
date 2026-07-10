@@ -8,5 +8,6 @@
   "editor.lineHeight": 20,
   "explorer.decorations.badges": false,
   "explorer.compactFolders": false,
-  "terminal.integrated.fontSize": 12
+  "terminal.integrated.fontSize": 12,
+  "folder-color.pathColors": []
 }

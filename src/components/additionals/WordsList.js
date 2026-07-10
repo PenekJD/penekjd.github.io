@@ -1,8 +1,8 @@
-class WordsList extends TvAlpineHTMLElement {
+class WordsList extends EzAlpineHTMLElement {
 
     ALPINE_COMPONENT_KEY = 'initWordsList';
 
-    TV_HTML = /*html*/`
+    EZ_HTML = /*html*/`
     <button class="top-title-row row-between button-dropdown" 
         :class="{ 'opened' : opened }"
         @click="opened = !opened"
@@ -179,4 +179,4 @@ class WordsList extends TvAlpineHTMLElement {
         }
     }
 }
-$tv.setComponent(WordsList);
+$ez.setComponent(WordsList);

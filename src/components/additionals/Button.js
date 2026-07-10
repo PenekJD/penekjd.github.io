@@ -1,4 +1,4 @@
-$tv.setComponent(
+$ez.setComponent(
     class Button extends HTMLElement {
         constructor() {
             super();

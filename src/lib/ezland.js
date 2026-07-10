@@ -1,20 +1,20 @@
-/** TV.js | v 3.1.1 - simple small lib for page-render by JS components 
+/** EzLand.js | v 1.0.1 - simple small lib for page-render by JS components 
  * Creator: Hrynchyk Dzmitryi
 */
-class TvHTMLElement extends HTMLElement {
+class EzHTMLElement extends HTMLElement {
     LEGACY_HTML = null;
-    TV_HTML = '';
+    EZ_HTML = '';
     ELEMENT_ATTRIBUTES = [];
     _bindHtml() {
         this.LEGACY_HTML = this.innerHTML ? Array.from(this.children) : [];
-        if (!this.TV_HTML) return;
-        this.innerHTML = typeof this.TV_HTML === 'function' 
-            ? this.TV_HTML(this.$)
-            : this.TV_HTML;
-        const container = this.LEGACY_HTML.length ? this.querySelector('tv-childs') : null;
+        if (!this.EZ_HTML) return;
+        this.innerHTML = typeof this.EZ_HTML === 'function' 
+            ? this.EZ_HTML(this.$)
+            : this.EZ_HTML;
+        const container = this.LEGACY_HTML.length ? this.querySelector('ez-childs') : null;
         if (!container) {
             this.LEGACY_HTML.forEach((child, idx) => {
-                const checkIdxContainer = this.querySelector('tv-child-' + idx);
+                const checkIdxContainer = this.querySelector('ez-child-' + idx);
                 if (!checkIdxContainer) return;
                 checkIdxContainer.replaceWith(child);
             });
@@ -25,7 +25,7 @@ class TvHTMLElement extends HTMLElement {
     connectedCallback() {
         if (this.getAttribute('loading')) return;
         this._bindHtml();
-        this.setAttribute('tv-binded', 1);
+        this.setAttribute('ez-binded', 1);
         this.ELEMENT_ATTRIBUTES.forEach(attrConf => {
             for (let keyCode in attrConf) {
                  this.setAttribute(keyCode, attrConf[keyCode]);
@@ -33,7 +33,7 @@ class TvHTMLElement extends HTMLElement {
         });
     }
 }
-class TvAlpineHTMLElement extends TvHTMLElement {
+class EzAlpineHTMLElement extends EzHTMLElement {
     ALPINE_COMPONENT_KEY = null; 
     DEPS = [];
     DEPS_WAIT_NUM = 0;
@@ -41,22 +41,22 @@ class TvAlpineHTMLElement extends TvHTMLElement {
     bindAlpineComponent() {
         if (this.DEPS_WAIT_NUM !== this.DEPS_LOADED) return;
         if (this.ALPINE_COMPONENT_KEY) {
-            $tv.$bind(this.ALPINE_COMPONENT_KEY, this[this.ALPINE_COMPONENT_KEY].bind(this, this.$attr)); 
-            this.setAttribute('x-data', '$tv.' + this.ALPINE_COMPONENT_KEY);
+            $ez.$bind(this.ALPINE_COMPONENT_KEY, this[this.ALPINE_COMPONENT_KEY].bind(this, this.$attr)); 
+            this.setAttribute('x-data', '$ez.' + this.ALPINE_COMPONENT_KEY);
         }
     }
     connectedCallback() {
         super.connectedCallback();
         if (this.getAttribute('loading')) return;
         let waitForResources = false;
-        window.fetchedTvDepsScripts = window.fetchedTvDepsScripts
-            ? window.fetchedTvDepsScripts : {};
+        window.fetchedEzDepsScripts = window.fetchedEzDepsScripts
+            ? window.fetchedEzDepsScripts : {};
         this.DEPS.forEach(attrConf => {
             for (let keyCode in attrConf) {
                 let element = null;
                 let srcPath = attrConf[keyCode];
-                let srcId = srcPath.split('.')[0].split('/').join('-');
-                if (window.fetchedTvDepsScripts[srcId]) return;
+                let srcId = 'ez-dep-' + btoa(srcPath).replace(/[^a-z0-9]/ig, '');
+                if (window.fetchedEzDepsScripts[srcId]) return;
                 if (keyCode === 'text/css') {
                     element = document.createElement('link');
                     element.href = srcPath;
@@ -69,7 +69,7 @@ class TvAlpineHTMLElement extends TvHTMLElement {
                     element = document.createElement('script');
                     element.src = srcPath;
                     element.onload = () => {
-                        window.fetchedTvDepsScripts[srcId] = true;
+                        window.fetchedEzDepsScripts[srcId] = true;
                         this.DEPS_LOADED++;
                         this.bindAlpineComponent();
                     };
@@ -83,7 +83,7 @@ class TvAlpineHTMLElement extends TvHTMLElement {
         this.bindAlpineComponent();
     }
 }
-$tv = (function() {
+$ez = (function() {
     return {
         domObserver: null,
         config: {
@@ -95,6 +95,7 @@ $tv = (function() {
         imports: {},
         lazyImports: {},
         deferImports: [],
+        deferConfigs: {},
         linksLoaded: 0,
         renderedComponentsNumber: 0,
         fetchedScripts: {},
@@ -103,7 +104,7 @@ $tv = (function() {
 
         startPending: (() => {
             window.addEventListener('load', () => {
-                $tv.initTv();
+                $ez.initEz();
             });
         })(),
         setComponent: function(comp){
@@ -127,9 +128,16 @@ $tv = (function() {
                 delete this.fetchedScripts[elTag];
             }
         },
-        import: function(elConfig) {
+        importSeparate: function(elConfig) {
             elConfig.define = elConfig.define.toLowerCase();
             this.imports[elConfig.define] = elConfig;
+        },
+        import: function(elConfig) {
+            if (Array.isArray(elConfig)) {
+                elConfig.forEach(this.importSeparate.bind(this));
+                return;
+            }
+            this.importSeparate(elConfig);
         },
         extendClass: function(classObject) {
             classObject.prototype.$attr = (context, attributeCode) => {
@@ -168,11 +176,13 @@ $tv = (function() {
                 }
             });
         },
-        registerDefer: function(element) {
+        registerDefer: function(element, el) {
             this.deferImports.push(element);
+            if (this.deferConfigs[el.define]) return;
+            this.deferConfigs[el.define] = el;
         },
         bindComponentClass: function(el, elClassName) {
-            const extendedClass = this.extendClass($tv.links[elClassName]);
+            const extendedClass = this.extendClass($ez.links[elClassName]);
             customElements.define(el.define, extendedClass);
             this.removeRegisterTag(el.define);
         },
@@ -197,21 +207,23 @@ $tv = (function() {
                 this.renderComponent(el);
             }
         },
-        initSingleComponent: function(element) {
-            const el = this.imports[element.tagName.toLowerCase()];
-            if (!el) return; 
+        initSingleComponent: function(element, isAfterDefer) {
+            const tagName = element.tagName.toLowerCase();
+            let el = this.imports[tagName];
+            if (!el && !isAfterDefer) return;
+            el = el || this.deferConfigs[tagName];
             el.loading = element.getAttribute('loading');
             if (el.loading === 'lazy') {
                 this.registerLazyload(element);
                 return;
             }
             if (el.loading === 'defer') {
-                this.registerDefer(element);
+                this.registerDefer(element, el);
                 return;
             }
             this.handleScriptFetch(el);
         },
-        initTv: function(node = document) {
+        initEz: function(node = document) {
             for (elTag in this.imports) this.addRegisterTag(elTag);
             if (this.registeredTags) {
                 node.querySelectorAll(this.registeredTags).forEach(element => this.initSingleComponent(element));
@@ -279,7 +291,7 @@ $tv = (function() {
         afterRender: function() {
             this.deferImports = this.deferImports.filter(element => {
                 element.setAttribute('loading', 'lazy');
-                this.initSingleComponent(element);
+                this.initSingleComponent(element, true);
                 return false;
             });
             this.$afterMethods = this.$afterMethods.filter(callback => {

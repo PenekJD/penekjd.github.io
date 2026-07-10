@@ -1,8 +1,8 @@
-class Assessment extends TvAlpineHTMLElement {
+class Assessment extends EzAlpineHTMLElement {
 
     ALPINE_COMPONENT_KEY = 'initAssessment';
 
-    TV_HTML = /*html*/`
+    EZ_HTML = /*html*/`
         <div :class="isByWeak && ('assessment-level-' + weakestLevelSelected).replace('.', '')">
 
             <div class="title">
@@ -502,4 +502,4 @@ class Assessment extends TvAlpineHTMLElement {
         }
     }
 }
-$tv.setComponent(Assessment);
+$ez.setComponent(Assessment);

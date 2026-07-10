@@ -1,8 +1,8 @@
-class TopAdditionals extends TvAlpineHTMLElement {
+class TopAdditionals extends EzAlpineHTMLElement {
 
     ALPINE_COMPONENT_KEY = 'initTopAdditionals';
 
-    TV_HTML = /*html*/`
+    EZ_HTML = /*html*/`
         <div>
             <template x-if="loaded">
                 <div class="top_additionals_block">
@@ -166,4 +166,4 @@ class TopAdditionals extends TvAlpineHTMLElement {
         }
     }
 }
-$tv.setComponent(TopAdditionals);
+$ez.setComponent(TopAdditionals);
