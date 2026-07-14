@@ -712,3 +712,7 @@ words-list .top-title-row {
     color:#000;
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
+/** Reduce flickering on about.html page */
+body:not([ez-inited="1"]) page > div {
+    display: none !important;
+}

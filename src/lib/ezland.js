@@ -1,26 +1,25 @@
-/** EzLand.js | v 1.0.1 - simple small lib for page-render by JS components 
+/** EzLand.js | v 1.0.3 - simple small lib for page-render by JS components 
  * Creator: Hrynchyk Dzmitryi
 */
 class EzHTMLElement extends HTMLElement {
-    LEGACY_HTML = null;
     EZ_HTML = '';
     ELEMENT_ATTRIBUTES = [];
     _bindHtml() {
-        this.LEGACY_HTML = this.innerHTML ? Array.from(this.children) : [];
         if (!this.EZ_HTML) return;
+        let legacy = this.innerHTML ? Array.from(this.children) : [];
         this.innerHTML = typeof this.EZ_HTML === 'function' 
             ? this.EZ_HTML(this.$)
             : this.EZ_HTML;
-        const container = this.LEGACY_HTML.length ? this.querySelector('ez-childs') : null;
+        const container = legacy.length ? this.querySelector('ez-childs') : null;
         if (!container) {
-            this.LEGACY_HTML.forEach((child, idx) => {
+            legacy.forEach((child, idx) => {
                 const checkIdxContainer = this.querySelector('ez-child-' + idx);
                 if (!checkIdxContainer) return;
                 checkIdxContainer.replaceWith(child);
             });
             return;
-        };
-        container.replaceWith(...this.LEGACY_HTML);
+        }
+        container.replaceWith(...legacy);
     }
     connectedCallback() {
         if (this.getAttribute('loading')) return;
@@ -72,7 +71,7 @@ class EzAlpineHTMLElement extends EzHTMLElement {
                         window.fetchedEzDepsScripts[srcId] = true;
                         this.DEPS_LOADED++;
                         this.bindAlpineComponent();
-                    };
+                    }
                 }
                 if (!element) return;
                 element.id = srcId;
@@ -91,7 +90,7 @@ $ez = (function() {
         },
         registeredTags: '',
         registeredTagsStrict: {},
-        tagRegex: null,
+        allTags: [],
         imports: {},
         lazyImports: {},
         deferImports: [],
@@ -131,6 +130,7 @@ $ez = (function() {
         importSeparate: function(elConfig) {
             elConfig.define = elConfig.define.toLowerCase();
             this.imports[elConfig.define] = elConfig;
+            this.allTags.push(elConfig.define.toUpperCase());
         },
         import: function(elConfig) {
             if (Array.isArray(elConfig)) {
@@ -225,33 +225,46 @@ $ez = (function() {
         },
         initEz: function(node = document) {
             for (elTag in this.imports) this.addRegisterTag(elTag);
-            if (this.registeredTags) {
-                node.querySelectorAll(this.registeredTags).forEach(element => this.initSingleComponent(element));
-            }
+            if (!this.registeredTags) return;
+            node.querySelectorAll(this.registeredTags).forEach(element => this.initSingleComponent(element));
         },
         handleDOMObserver: function() {
             if (this.domObserver) return;
+            const handleElement = (element, arr) => {
+                let tagName = element.tagName.toLowerCase();
+                if (!this.imports[tagName]) return;
+                arr.push({ tag: tagName, element: element});
+            }
+            const prepareElementForMutaion = (targetNode, arr, query, mutation) => {
+                let uninitedElements = targetNode.querySelectorAll(query);
+                uninitedElements.forEach(element => handleElement(element, arr));
+            }
             this.domObserver = new MutationObserver((mutationsList) => {
+                let query = Object.keys(this.imports).join(',');
+                if (!query) return;
                 const elementsForNodeMutation = [];
                 for (let mutation of mutationsList) {
-                    if (mutation.type !== 'childList' || !mutation.addedNodes.length) continue;
-                    for (let node of mutation.addedNodes) {
-                        if (!node.tagName) continue;
-                        let tagName = node.tagName.toLowerCase();
-                        if (this.imports[tagName]) {
-                            elementsForNodeMutation.push(node);
-                            continue;
-                        };
-                        for (let newNode of node.childNodes) {
-                            if (!newNode.tagName) continue;
-                            let subTagName = newNode.tagName.toLowerCase();
-                            if (!this.imports[subTagName]) continue;
-                            elementsForNodeMutation.push(newNode);
-                        }
+                    if (mutation.type !== 'childList' 
+                        || mutation.target.getAttribute('ez-simple') 
+                        || !mutation.addedNodes.length
+                    ) continue;
+                    if (this.allTags.includes(mutation.target.tagName)) {
+                        prepareElementForMutaion(mutation.target, elementsForNodeMutation, query, mutation);
+                        continue;
                     }
+                    mutation.addedNodes.forEach(addedNode => {
+                        const isSkipping = addedNode.previousSibling 
+                            && addedNode.previousSibling.nodeName !== 'TEMPLATE';
+                        if (!addedNode.querySelectorAll || isSkipping) return;
+                        if (addedNode.getAttribute('ez-simple') || this.allTags.includes(addedNode.tagName)) {
+                            handleElement(addedNode, elementsForNodeMutation);
+                            return;
+                        }
+                        prepareElementForMutaion(addedNode, elementsForNodeMutation, query, mutation);
+                    });
                 }
-                elementsForNodeMutation.forEach(element => {
-                    this.handleNodeMutation(element, element.tagName.toLowerCase());
+                elementsForNodeMutation.forEach(el => {
+                    this.handleNodeMutation(el.element, el.tag);
                 });
             });
             this.domObserver.observe(document.body, {
@@ -267,18 +280,12 @@ $ez = (function() {
             if (this.registeredTagsStrict[strElTag]) return;
             this.registeredTags += this.registeredTags ? ', ' + strElTag : strElTag;
             this.registeredTagsStrict[strElTag] = true;
-            this.createRegexOfRegisteredTags();
         },
         removeRegisterTag(strElTag) {
             const regex = new RegExp(`, ?${strElTag}|${strElTag}, ?`, 'g');
             this.registeredTags = this.registeredTags.replace(regex, '');
             if (this.imports[strElTag]) delete this.imports[strElTag];
             if (this.registeredTagsStrict[strElTag]) delete this.registeredTagsStrict[strElTag];
-            this.createRegexOfRegisteredTags();
-        },
-        createRegexOfRegisteredTags: function() {
-            const cleanTags = this.registeredTags.split(',').map(str => str.trim()).join('|');
-            this.tagRegex = new RegExp(cleanTags);
         },
         setConfig: function(config){
             let self = this;
@@ -299,8 +306,9 @@ $ez = (function() {
             });
             if (!this.domObserver) {
                 this.handleDOMObserver();
-            };
+            }
             this.handleInteraction();
+            document.body.setAttribute('ez-inited', 1);
         },
         handleInteraction: function (){
             const eventsArray = ['wheel', 'touchstart', 'scroll', 'keydown', 'mouseover'];
