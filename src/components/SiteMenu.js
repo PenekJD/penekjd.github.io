@@ -10,7 +10,7 @@ class SiteMenu extends EzAlpineHTMLElement {
                 Languager
             </h2>
         </a>
-        <code>v 1.0.3</code>
+        <code>v 1.0.4</code>
     </section>
     <nav role="navigation">
         <ul>
